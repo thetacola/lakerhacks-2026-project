@@ -1,10 +1,10 @@
 import { Scene } from 'phaser';
 
-export class Game extends Scene
+export class Stats extends Scene
 {
     constructor ()
     {
-        super('Game');
+        super('Stats');
     }
 
     create ()
@@ -13,7 +13,7 @@ export class Game extends Scene
 
         this.add.image(512, 384, 'background').setAlpha(0.5);
 
-        this.add.text(0, 0, 'Make something fun!\nand share it with us:\nsupport@phaser.io', {
+        this.add.text(512, 32, 'Stats', {
             fontFamily: 'Arial Black', fontSize: 38, color: '#ffffff',
             stroke: '#000000', strokeThickness: 8,
             align: 'center'
