@@ -19,13 +19,7 @@ export class Stats extends Scene
             align: 'left'
         }).setOrigin(0.0, 0.5);
 
-        // TODO: change to image
-        const metalButton =  createLoadingBar (10, 100, 0);
-        this.add.text(10, 100, 'Metals', {
-            fontFamily: 'Arial Black', fontSize: 38, color: '#ffffff',
-            stroke: '#000000', strokeThickness: 8,
-            align: 'left'
-        }).setOrigin(0.0, 0.5);
+        const metalButton =  createLoadingBar('Metals', 10, 100, 65, this);
         const plasticButton = this.add.text(10, 150, 'Plastic', {
             fontFamily: 'Arial Black', fontSize: 38, color: '#ffffff',
             stroke: '#000000', strokeThickness: 8,
@@ -67,16 +61,24 @@ export class Stats extends Scene
            statText.setText('TODO: information about e-waste metals https://www.sciencedirect.com/science/article/abs/pii/S0957582022003160')
         });
 
-    }
 
-    function createLoadingBar (posX, posY, percent) {
-        var bar = this.add.image(posX, posY, 'loading-bar').setOrigin(0.0, 0.5);
 
-        numObjs = Math.round((percent / 5));
-        for (int i = 0; i < numObjs; i++) {
-            this.add.image(posX + (i + 48), posY), 'loading-bar-unit').setOrigin(0.0, 0.5);
+        function createLoadingBar (text, posX, posY, percent, scene) {
+            var bar = scene.add.image(posX, posY, 'loading-bar').setOrigin(0.0, 0.5);
+
+            var numObjs = Math.round((percent / 5));
+            for (var i = 0; i < numObjs; i++) {
+                var offsetX = posX + (i * 30);
+                scene.add.image(offsetX, posY, 'loading-bar-unit').setOrigin(0.0, 0.5);
+            }
+
+            scene.add.text(10, 100, text, {
+                fontFamily: 'Arial Black', fontSize: 38, color: '#ffffff',
+                stroke: '#000000', strokeThickness: 8,
+                align: 'left'
+            }).setOrigin(0.0, 0.5);
+
+            return bar;
         }
-
-        return bar;
     }
 }
