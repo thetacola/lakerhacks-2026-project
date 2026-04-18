@@ -19,10 +19,21 @@ export class Stats extends Scene
             align: 'center'
         }).setOrigin(0.5);
 
+        // TODO: change to image
+        const metalButton = this.add.text(100, 100, 'Metal', { fill: '#0f0' });
+        const plasticButton = this.add.text(100, 130, 'Plastic', { fill: '#0f0' });
+        const magnetsButton = this.add.text(100, 160, 'Magnets', { fill: '#0f0' })
+
+        metalButton.setInteractive();
+        plasticButton.setInteractive();
+        magnetsButton.setInteractive();
+
+
         this.input.once('pointerdown', () => {
 
             this.scene.start('GameOver');
 
         });
+
     }
 }
