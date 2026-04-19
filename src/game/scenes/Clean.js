@@ -3,9 +3,20 @@ import { Scene } from 'phaser';
 export class Clean extends Scene {
     constructor() {
         super('Clean');
+
+        this.hunger = 0;
+        this.energy = 100;
+        this.fun = 0;
+        this.cleanliness = 100;
     }
 
     create() {
+
+        this.hunger = this.registry.get('hunger');
+        this.energy = this.registry.get('energy');
+        this.fun = this.registry.get('fun');
+        this.cleanliness = this.registry.get('cleanliness');
+
         console.log('Clean scene started');
         
         // Set background
@@ -47,6 +58,56 @@ export class Clean extends Scene {
             console.log('Returning to Main');
             this.scene.start('Main');
         });
+
+        this.registry.events.on('changedata', this.updateData, this);
+        var decreaseTimer = this.time.addEvent({
+            delay: 6000, // ms
+            callback: this.decreaseStats,
+            args: [this],
+            //callbackScope: thisArg,
+            loop: true
+        });
+        var increaseTime = this.time.addEvent({
+            delay: 100, // ms
+            callback: this.increaseCleanliness,
+            args: [this],
+            loop: true
+        });
+    }
+
+    increaseCleanliness(scene) {
+        if (scene.cleanliness <= 99) {
+            scene.cleanliness = scene.cleanliness + 1;
+            var oldHappiness = scene.registry.get('happiness');
+            scene.registry.set('cleanliness', scene.cleanliness);
+            var newHappiness = (scene.hunger + scene.energy + scene.fun + scene.cleanliness) / 4;
+            scene.registry.set('happiness', newHappiness);
+
+            console.log("Old happiness: ", oldHappiness, " → New happiness: ", scene.registry.get('happiness'));
+        }
+    }
+
+    decreaseStats(scene) {
+        if (scene.hunger >= 1) {
+            scene.hunger = scene.hunger - 1;
+        }
+        if (scene.fun >= 1) {
+            scene.fun = scene.fun - 1;
+        }
+        if (scene.energy >= 1) {
+            scene.energy = scene.energy - 1;
+        }
+
+        var oldHappiness = scene.registry.get('happiness');
+
+        scene.registry.set('hunger', scene.hunger);
+        scene.registry.set('fun', scene.fun);
+        scene.registry.set('energy', scene.energy);
+
+        var newHappiness = (scene.hunger + scene.energy + scene.fun + scene.cleanliness) / 4;
+        scene.registry.set('happiness', newHappiness);
+
+        console.log("Old happiness: ", oldHappiness, " → New happiness: ", scene.registry.get('happiness'));
     }
 
     startBubbleLoop() {
@@ -117,5 +178,17 @@ export class Clean extends Scene {
         };
         
         scheduleNext();
+    }
+
+    updateData(parent, key, data) {
+        if (key === 'hunger') {
+            this.hunger = data;
+        } else if (key === 'energy') {
+            this.energy = data;
+        } else if (key === 'fun') {
+            this.fun = data;
+        } else if (key === 'cleanliness') {
+            this.cleanliness = data;
+        }
     }
 }

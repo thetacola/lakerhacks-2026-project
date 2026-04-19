@@ -74,6 +74,7 @@ export class Main extends Scene {
         // Initialize menu state
         this.menuOpen = false;
 
+        this.registry.events.on('changedata', this.updateData, this);
         var timer = this.time.addEvent({
             delay: 6000, // ms
             callback: this.decreaseStats,
