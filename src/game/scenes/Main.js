@@ -156,17 +156,17 @@ export class Main extends Scene {
             { key: 'sleep', label: 'Sleep', scene: 'Sleep' }
         ];
 
-        // Matrix layout settings
+        // LEFT-ORIENTED matrix layout settings
         const cols = 3;
         const rows = 2;
-        const buttonSpacingX = screenWidth * 0.2; // 20% of screen width between buttons
-        const buttonSpacingY = screenHeight * 0.15; // 15% of screen height between buttons
-        const startX = screenWidth * 0.2; // Start 20% from left
-        const startY = screenHeight * 0.1; // Start 10% from top
+        const buttonSpacingX = 160; // Reduced spacing between buttons
+        const buttonSpacingY = 120;  // Same vertical spacing
+        const startX = 80;          // Much closer to left edge (was 200)
+        const startY = 80;          // Same top position
 
-        // Image and text sizing
-        const imageScale = 0.08 * scale; // Slightly smaller for better matrix layout
-        const fontSize = Math.floor(20 * scale);
+        // FIXED sizing - no more scale multiplication
+        const imageScale = 0.06;    // Fixed scale
+        const fontSize = 16;        // Fixed font size
 
         buttons.forEach((buttonData, index) => {
             // Calculate position in matrix
@@ -185,7 +185,7 @@ export class Main extends Scene {
                 fontSize: fontSize,
                 color: '#ffffff',
                 stroke: '#000000',
-                strokeThickness: 3,
+                strokeThickness: 2,
                 align: 'center'
             }).setOrigin(0.5);
 
@@ -259,37 +259,20 @@ export class Main extends Scene {
     }
     
     getScale() {
-        // More conservative scale calculation for browser compatibility
-        const screenWidth = this.cameras.main.width;
-        const screenHeight = this.cameras.main.height;
-        
-        // Base reference size (your original game size)
-        const baseWidth = 1024;
-        const baseHeight = 768;
-        
-        // Calculate relative scale but cap it to prevent oversizing
-        const scaleX = screenWidth / baseWidth;
-        const scaleY = screenHeight / baseHeight;
-        
-        // Use smaller scale and clamp between reasonable bounds
-        const scale = Math.min(scaleX, scaleY);
-        
-        // More conservative clamping - prevent things from getting too big
-        return Math.max(0.4, Math.min(1.2, scale));
+        // Return fixed scale of 1 - no more dynamic scaling
+        return 1;
     }
     
     createTaskbar() {
-        // Get scale factor
-        const scale = this.getScale();
         const screenWidth = this.cameras.main.width;
         const screenHeight = this.cameras.main.height;
         
-        // Calculate sizes - base 40 becomes 60
-        const taskbarHeight = 60 * scale;
-        const buttonWidth = 100 * scale;
-        const buttonHeight = 42 * scale;
-        const fontSize = 18 * scale;
-        const clockFontSize = Math.floor(14 * scale);
+        // FIXED sizes - no more scaling
+        const taskbarHeight = 50;
+        const buttonWidth = 80;
+        const buttonHeight = 35;
+        const fontSize = 14;
+        const clockFontSize = 12;
         
         // Create Windows 98 style taskbar
         const taskbar = this.add.graphics();
@@ -335,7 +318,7 @@ export class Main extends Scene {
         this.startButton.on('pointerup', () => this.toggleStartMenu());
 
         // SYSTEM TRAY AREA (RIGHT SIDE)
-        const systemTrayWidth = 140 * scale;
+        const systemTrayWidth = 120;
         const systemTrayHeight = taskbarHeight - 8;
         const systemTrayX = screenWidth - systemTrayWidth - 4;
         const systemTrayY = screenHeight - taskbarHeight + 4;

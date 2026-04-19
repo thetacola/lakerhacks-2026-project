@@ -12,8 +12,6 @@ import { Clean } from './scenes/Clean';
 import { Sleep } from './scenes/Sleep';
 import { AUTO, Game, Scale } from 'phaser';
 
-//  Find out more information about the Game Config at:
-//  https://docs.phaser.io/api-documentation/typedef/types-core#gameconfig
 const config = {
     type: AUTO,
     width: 1024,
@@ -21,8 +19,10 @@ const config = {
     parent: 'game-container',
     backgroundColor: '#028af8',
     scale: {
-        mode: Scale.EXPAND,
-        autoCenter: Scale.CENTER_BOTH
+        mode: Scale.FIT,  // Changed from EXPAND to FIT
+        autoCenter: Scale.CENTER_BOTH,
+        width: 1024,      // Fixed width
+        height: 768       // Fixed height
     },
     audio: {
         disableWebAudio: false
@@ -44,9 +44,7 @@ const config = {
 };
 
 const StartGame = (parent) => {
-
     return new Game({ ...config, parent });
-
 }
 
 export default StartGame;

@@ -27,7 +27,7 @@ export class Sleep extends Scene {
         // Get scale factor for consistent sizing
         const scale = this.getScale();
 
-        // CREATE SINGLE WAKEUP BUTTON AT TOP RIGHT
+        // CREATE SINGLE WAKEUP BUTTON AT TOP LEFT
         this.createWakeupButton(scale, screenWidth, screenHeight);
 
         // Create baby animation for sleeping
@@ -35,7 +35,7 @@ export class Sleep extends Scene {
 
         // Create the baby sprite using frames 10-14 - stationary at 3/4 down screen
         this.baby = this.add.sprite(screenWidth / 2, (screenHeight * 3) / 4, 'baby', 'mm-crawl-10.png');
-        this.baby.setScale(scale * 2.5); // Scale appropriately for sleep scene
+        this.baby.setScale(2.5); // FIXED scale - no more dynamic scaling
         
         // Start the sleeping animation
         this.baby.play('baby-sleep');
