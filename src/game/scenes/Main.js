@@ -58,7 +58,7 @@ export class Main extends Scene {
             { key: 'play', label: 'Play', scene: 'Play' },
             { key: 'feed', label: 'Feed', scene: 'Feed' },
             // Row 2
-            { key: 'gather', label: 'Gather', scene: 'Gather' },
+            { key: 'gather', label: 'gather', scene: 'Gather' },
             { key: 'clean', label: 'Clean', scene: 'Clean' },
             { key: 'sleep', label: 'Sleep', scene: 'Sleep' }
         ];
