@@ -23,11 +23,14 @@ export class Play extends Scene {
         // Create court background
         this.createCourt(screenWidth, screenHeight);
 
+        // Create basketball
+        this.createBall(screenWidth, screenHeight);
+
         // Create basketball hoop
         this.createHoop(screenWidth, screenHeight);
 
-        // Create basketball
-        this.createBall(screenWidth, screenHeight);
+        this.physics.add.collider(this.ball, this.hoopStand);
+        this.physics.add.collider(this.ball, this.hoopNet);
 
         // Create UI
         this.createUI(screenWidth, screenHeight);
@@ -65,12 +68,19 @@ export class Play extends Scene {
 
         // Basketball hoop stand
         this.hoopStand = this.add.image(this.hoopX, this.hoopY, 'hoop-stand');
-        this.hoopStand.setScale(1.2);
+
         this.physics.world.enable(this.hoopStand);
+        this.hoopStand.body.setSize(56, 1640);
+        this.hoopStand.body.setOffset(202, 0);
+        this.hoopStand.setScale(1.2);
         this.hoopStand.body.setImmovable(true);
 
         // Basketball hoop net (collision area for scoring)
         this.hoopNet = this.add.image(this.hoopX, this.hoopY, 'hoop-net');
+
+        this.physics.world.enable(this.hoopNet);
+        this.hoopNet.body.setSize(4, 144);
+        this.hoopNet.body.setOffset(50, 100);
         this.hoopNet.setScale(1.2);
         this.physics.world.enable(this.hoopNet);
         this.hoopNet.body.setImmovable(true);
@@ -109,6 +119,8 @@ export class Play extends Scene {
         this.ball.body.setBounce(0.6);
         this.ball.body.setCollideWorldBounds(true);
         this.ball.body.setDrag(30);
+        this.ball.body.setGravityY(500);
+        this.ball.body.setAllowGravity(false);
         
         // Make ball glow to show it's interactive
         this.ball.setTint(0xffffaa); // Light yellow tint
@@ -277,12 +289,13 @@ export class Play extends Scene {
         const normalizedY = deltaY / distance;
 
         // Calculate velocity based on power and direction
-        const baseVelocity = 300 + (this.power * 5); // 300-800 velocity range
+        const baseVelocity = (300 + (this.power * 5)) * 2; // 600-1600 velocity range
         const velocityX = normalizedX * baseVelocity;
         const velocityY = normalizedY * baseVelocity;
 
         console.log(`Ball velocity: ${velocityX}, ${velocityY}`);
 
+        this.ball.body.setAllowGravity(true);
         // Apply velocity to ball
         this.ball.body.setVelocity(velocityX, velocityY);
         
@@ -291,6 +304,7 @@ export class Play extends Scene {
 
         // Reset ball after a delay
         this.time.delayedCall(4000, () => {
+            this.ball.body.setAllowGravity(false);
             this.resetBall();
         });
 
