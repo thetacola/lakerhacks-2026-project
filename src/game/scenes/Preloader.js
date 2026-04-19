@@ -42,6 +42,10 @@ export class Preloader extends Scene
         this.load.image('sleep', 'sleep.png');
         this.load.image('wakeup', 'wakeup.png');
         this.load.audio('bgMusic', 'bgm.mp3');
+        this.load.image('menu-bar', 'menu-bar.png');
+        this.load.image('loading-bar', 'loading-bar.png');
+        this.load.image('loading-bar-unit', 'loading-bar-unit.png');
+        this.load.image('dialog-box', 'dialog-box.png');
     }
 
     create ()
