@@ -3,9 +3,19 @@ import { Scene } from 'phaser';
 export class Play extends Scene {
     constructor() {
         super('Play');
+
+        this.hunger = 0;
+        this.energy = 100;
+        this.fun = 0;
+        this.cleanliness = 100;
     }
 
     create() {
+        this.hunger = this.registry.get('hunger');
+        this.energy = this.registry.get('energy');
+        this.fun = this.registry.get('fun');
+        this.cleanliness = this.registry.get('cleanliness');
+
         // Set basketball court background color
         this.cameras.main.setBackgroundColor(0x8B4513); // Brown court color
 
@@ -48,6 +58,40 @@ export class Play extends Scene {
         });
 
         console.log('Basketball game started!');
+
+        this.registry.events.on('changedata', this.updateData, this);
+        var decreaseTimer = this.time.addEvent({
+            delay: 6000, // ms
+            callback: this.decreaseStats,
+            args: [this],
+            //callbackScope: thisArg,
+            loop: true
+        });
+    }
+
+    decreaseStats(scene) {
+        if (scene.hunger >= 1) {
+            scene.hunger = scene.hunger - 1;
+        }
+        if (scene.cleanliness >= 1) {
+            scene.cleanliness = scene.cleanliness - 1;
+        }
+        if (scene.energy >= 3) {
+            scene.energy = scene.energy - 3;
+        } else {
+            scene.energy = 0;
+        }
+
+        var oldHappiness = scene.registry.get('happiness');
+
+        scene.registry.set('hunger', scene.hunger);
+        scene.registry.set('fun', scene.fun);
+        scene.registry.set('cleanliness', scene.cleanliness);
+
+        var newHappiness = (scene.hunger + scene.energy + scene.fun + scene.cleanliness) / 4;
+        scene.registry.set('happiness', newHappiness);
+
+        console.log("Old happiness: ", oldHappiness, " → New happiness: ", scene.registry.get('happiness'));
     }
 
     updateBabyColor() {
@@ -567,5 +611,32 @@ export class Play extends Scene {
         mainButton.on('pointerout', () => mainButton.clearTint());
 
         console.log(`Game ended! Final score: ${this.score}`);
+
+        if (this.fun < 100 - (this.score * 5)) {
+            this.fun = this.fun + (this.score * 5);
+        } else {
+            this.fun = 100;
+        }
+
+        var oldHappiness = this.registry.get('happiness');
+
+        this.registry.set('fun', this.fun);
+
+        var newHappiness = (this.hunger + this.energy + this.fun + this.cleanliness) / 4;
+        this.registry.set('happiness', newHappiness);
+
+        console.log("Old happiness: ", oldHappiness, " → New happiness: ", this.registry.get('happiness'));
+    }
+
+    updateData(parent, key, data) {
+        if (key === 'hunger') {
+            this.hunger = data;
+        } else if (key === 'energy') {
+            this.energy = data;
+        } else if (key === 'fun') {
+            this.fun = data;
+        } else if (key === 'cleanliness') {
+            this.cleanliness = data;
+        }
     }
 }
