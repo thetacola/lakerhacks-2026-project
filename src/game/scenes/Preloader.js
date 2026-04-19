@@ -55,6 +55,11 @@ export class Preloader extends Scene
         this.load.image('phone', 'assets/phone.png');
         this.load.image('game', 'assets/game.png');
         this.load.image('backetball', 'assets/basketball.png');
+        this.load.audio('air', 'assets/air_burst.wav');
+        this.load.audio('pickup', 'assets/cardboard_pick_up.wav');
+        this.load.audio('jump', 'assets/jump.wav');
+        this.load.audio('eating', 'assets/munching_food.wav');
+        this.load.audio('washingup', 'assets/water_babbling_loop.wav');
     }
 
     create ()

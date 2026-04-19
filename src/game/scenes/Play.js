@@ -11,11 +11,6 @@ export class Play extends Scene {
     }
 
     create() {
-        this.hunger = this.registry.get('hunger');
-        this.energy = this.registry.get('energy');
-        this.fun = this.registry.get('fun');
-        this.cleanliness = this.registry.get('cleanliness');
-
         // Set basketball court background color
         this.cameras.main.setBackgroundColor(0x8B4513); // Brown court color
 
@@ -23,6 +18,13 @@ export class Play extends Scene {
         const screenWidth = this.cameras.main.width;
         const screenHeight = this.cameras.main.height;
 
+        // Debug available sounds - ADD THIS
+        console.log('Available sound keys in Play scene:', Object.keys(this.sound.sounds || {}));
+        console.log('Sound manager:', this.sound);
+        console.log('Looking for jump sound:', this.sound.get('jump'));
+        console.log('Looking for air sound:', this.sound.get('air'));
+
+        // Rest of your existing create() method...
         // Game variables
         this.score = 0;
         this.timeLeft = 30; // 30 seconds
@@ -58,15 +60,116 @@ export class Play extends Scene {
         });
 
         console.log('Basketball game started!');
+    }
 
-        this.registry.events.on('changedata', this.updateData, this);
-        var decreaseTimer = this.time.addEvent({
-            delay: 6000, // ms
-            callback: this.decreaseStats,
-            args: [this],
-            //callbackScope: thisArg,
-            loop: true
+    shootBallSimple(targetX, targetY) {
+        if (this.ballInMotion) return;
+
+        this.ballInMotion = true;
+        console.log(`Shooting toward: ${targetX}, ${targetY}`);
+
+        // Enhanced sound debugging and fallback
+        console.log('Attempting to play jump sound...');
+        console.log('Sound cache keys:', Object.keys(this.cache.audio.entries.entries || {}));
+        
+        if (this.cache.audio.exists('jump')) {
+            console.log('Jump sound exists in cache');
+            try {
+                this.sound.play('jump', {
+                    volume: 0.6,
+                    loop: false
+                });
+                console.log('Jump sound played successfully');
+            } catch (error) {
+                console.error('Error playing jump sound:', error);
+            }
+        } else {
+            console.warn('Jump sound not found in audio cache');
+            console.log('Available audio in cache:', Object.keys(this.cache.audio.entries.entries || {}));
+        }
+
+        // BABY HOP ANIMATION - make baby hop when shooting
+        this.makeBabyHop();
+
+        // Rest of your existing shootBallSimple method...
+        const deltaX = targetX - this.ball.x;
+        const deltaY = targetY - this.ball.y;
+        
+        const distance = Math.sqrt(deltaX * deltaX + deltaY * deltaY);
+        const normalizedX = deltaX / distance;
+        const normalizedY = deltaY / distance;
+
+        const baseVelocity = (300 + (this.power * 5)) * 2;
+        const velocityX = normalizedX * baseVelocity;
+        const velocityY = normalizedY * baseVelocity;
+
+        console.log(`Ball velocity: ${velocityX}, ${velocityY}`);
+
+        this.ball.body.setAllowGravity(true);
+        this.ball.body.setVelocity(velocityX, velocityY);
+        this.ball.clearTint();
+
+        this.time.delayedCall(4000, () => {
+            this.ball.body.setAllowGravity(false);
+            this.resetBall();
         });
+
+        if (this.powerTimer) {
+            this.powerTimer.paused = true;
+        }
+    }
+
+    scoreBasket() {
+        if (this.ball.body.velocity.y > 100 && 
+            !this.ball.justScored && 
+            !this.ball.hasScored) {
+            
+            console.log('Ball scored! Velocity Y:', this.ball.body.velocity.y);
+            
+            this.ball.justScored = true;
+            this.ball.hasScored = true;
+            
+            this.score += 2;
+            this.scoreText.setText(`Score: ${this.score}`);
+
+            // Enhanced sound debugging for air sound
+            console.log('Attempting to play air sound...');
+            
+            if (this.cache.audio.exists('air')) {
+                console.log('Air sound exists in cache');
+                try {
+                    this.sound.play('air', {
+                        volume: 0.8,
+                        loop: false
+                    });
+                    console.log('Air sound played successfully');
+                } catch (error) {
+                    console.error('Error playing air sound:', error);
+                }
+            } else {
+                console.warn('Air sound not found in audio cache');
+                console.log('Available audio in cache:', Object.keys(this.cache.audio.entries.entries || {}));
+            }
+
+            // Visual feedback
+            const scorePopup = this.add.text(this.hoopX, this.hoopY - 50, '+2', {
+                fontFamily: 'Arial Black',
+                fontSize: 32,
+                color: '#00ff00',
+                stroke: '#000000',
+                strokeThickness: 2
+            }).setOrigin(0.5);
+
+            this.tweens.add({
+                targets: scorePopup,
+                y: scorePopup.y - 50,
+                alpha: 0,
+                duration: 1000,
+                onComplete: () => scorePopup.destroy()
+            });
+
+            console.log(`Score! Total: ${this.score}`);
+        }
     }
 
     decreaseStats(scene) {
@@ -356,50 +459,6 @@ export class Play extends Scene {
         this.ball.setTint(tintColor);
     }
 
-    shootBallSimple(targetX, targetY) {
-        if (this.ballInMotion) return;
-
-        this.ballInMotion = true;
-        console.log(`Shooting toward: ${targetX}, ${targetY}`);
-
-        // BABY HOP ANIMATION - make baby hop when shooting
-        this.makeBabyHop();
-
-        // Calculate direction from ball to click point
-        const deltaX = targetX - this.ball.x;
-        const deltaY = targetY - this.ball.y;
-        
-        // Normalize direction
-        const distance = Math.sqrt(deltaX * deltaX + deltaY * deltaY);
-        const normalizedX = deltaX / distance;
-        const normalizedY = deltaY / distance;
-
-        // Calculate velocity based on power and direction
-        const baseVelocity = (300 + (this.power * 5)) * 2; // 600-1600 velocity range
-        const velocityX = normalizedX * baseVelocity;
-        const velocityY = normalizedY * baseVelocity;
-
-        console.log(`Ball velocity: ${velocityX}, ${velocityY}`);
-
-        this.ball.body.setAllowGravity(true);
-        // Apply velocity to ball
-        this.ball.body.setVelocity(velocityX, velocityY);
-        
-        // Clear ball tint during flight
-        this.ball.clearTint();
-
-        // Reset ball after a delay
-        this.time.delayedCall(4000, () => {
-            this.ball.body.setAllowGravity(false);
-            this.resetBall();
-        });
-
-        // Stop power oscillation during shot
-        if (this.powerTimer) {
-            this.powerTimer.paused = true;
-        }
-    }
-
     makeBabyHop() {
         // Store baby's original position
         const originalY = this.baby.y;
@@ -432,42 +491,6 @@ export class Play extends Scene {
         });
         
         console.log('Baby hopping animation started!');
-    }
-
-    scoreBasket() {
-        // FIXED: Much stricter scoring conditions to prevent multiple scores
-        if (this.ball.body.velocity.y > 100 && // Ball must be falling fast (not just drifting)
-            !this.ball.justScored && 
-            !this.ball.hasScored) { // Additional flag to prevent any double scoring
-            
-            console.log('Ball scored! Velocity Y:', this.ball.body.velocity.y);
-            
-            this.ball.justScored = true;
-            this.ball.hasScored = true; // Set permanent flag for this throw
-            
-            this.score += 2; // 2 points per basket
-            this.scoreText.setText(`Score: ${this.score}`);
-
-            // Visual feedback
-            const scorePopup = this.add.text(this.hoopX, this.hoopY - 50, '+2', {
-                fontFamily: 'Arial Black',
-                fontSize: 32,
-                color: '#00ff00',
-                stroke: '#000000',
-                strokeThickness: 2
-            }).setOrigin(0.5);
-
-            this.tweens.add({
-                targets: scorePopup,
-                y: scorePopup.y - 50,
-                alpha: 0,
-                duration: 1000,
-                onComplete: () => scorePopup.destroy()
-            });
-
-            // Don't reset scoring flags - they stay true until ball is reset
-            console.log(`Score! Total: ${this.score}`);
-        }
     }
 
     resetBall() {
