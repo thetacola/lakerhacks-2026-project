@@ -67,13 +67,13 @@ export class Play extends Scene {
         if (scene.hunger >= 1) {
             scene.hunger = scene.hunger - 1;
         }
-        if (scene.cleanliness >= 3) {
-            scene.cleanliness = scene.cleanliness - 3;
-        } else {
-            scene.cleanliness = 0;
+        if (scene.cleanliness >= 1) {
+            scene.cleanliness = scene.cleanliness - 1;
         }
-        if (scene.energy >= 1) {
-            scene.energy = scene.energy - 1;
+        if (scene.energy >= 3) {
+            scene.energy = scene.energy - 3;
+        } else {
+            scene.energy = 0;
         }
 
         var oldHappiness = scene.registry.get('happiness');
@@ -582,6 +582,8 @@ export class Play extends Scene {
 
         var newHappiness = (this.hunger + this.energy + this.fun + this.cleanliness) / 4;
         this.registry.set('happiness', newHappiness);
+
+        console.log("Old happiness: ", oldHappiness, " → New happiness: ", this.registry.get('happiness'));
     }
 
     updateData(parent, key, data) {
