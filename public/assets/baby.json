@@ -1,0 +1,395 @@
+{
+	"textures": [
+		{
+			"image": "baby-0.png",
+			"format": "RGBA8888",
+			"size": {
+				"w": 61,
+				"h": 549
+			},
+			"scale": 1,
+			"frames": [
+				{
+					"filename": "mm-crawl-0.png",
+					"rotated": false,
+					"trimmed": true,
+					"sourceSize": {
+						"w": 64,
+						"h": 64
+					},
+					"spriteSourceSize": {
+						"x": 4,
+						"y": 12,
+						"w": 57,
+						"h": 38
+					},
+					"frame": {
+						"x": 0,
+						"y": 0,
+						"w": 57,
+						"h": 38
+					},
+					"anchor": {
+						"x": 0.5,
+						"y": 0.5
+					}
+				},
+				{
+					"filename": "mm-crawl-1.png",
+					"rotated": false,
+					"trimmed": true,
+					"sourceSize": {
+						"w": 64,
+						"h": 64
+					},
+					"spriteSourceSize": {
+						"x": 4,
+						"y": 13,
+						"w": 57,
+						"h": 38
+					},
+					"frame": {
+						"x": 0,
+						"y": 38,
+						"w": 57,
+						"h": 38
+					},
+					"anchor": {
+						"x": 0.5,
+						"y": 0.5
+					}
+				},
+				{
+					"filename": "mm-crawl-2.png",
+					"rotated": false,
+					"trimmed": true,
+					"sourceSize": {
+						"w": 64,
+						"h": 64
+					},
+					"spriteSourceSize": {
+						"x": 4,
+						"y": 15,
+						"w": 57,
+						"h": 36
+					},
+					"frame": {
+						"x": 0,
+						"y": 76,
+						"w": 57,
+						"h": 36
+					},
+					"anchor": {
+						"x": 0.5,
+						"y": 0.5
+					}
+				},
+				{
+					"filename": "mm-crawl-3.png",
+					"rotated": false,
+					"trimmed": true,
+					"sourceSize": {
+						"w": 64,
+						"h": 64
+					},
+					"spriteSourceSize": {
+						"x": 2,
+						"y": 16,
+						"w": 61,
+						"h": 35
+					},
+					"frame": {
+						"x": 0,
+						"y": 112,
+						"w": 61,
+						"h": 35
+					},
+					"anchor": {
+						"x": 0.5,
+						"y": 0.5
+					}
+				},
+				{
+					"filename": "mm-crawl-4.png",
+					"rotated": false,
+					"trimmed": true,
+					"sourceSize": {
+						"w": 64,
+						"h": 64
+					},
+					"spriteSourceSize": {
+						"x": 2,
+						"y": 19,
+						"w": 61,
+						"h": 35
+					},
+					"frame": {
+						"x": 0,
+						"y": 147,
+						"w": 61,
+						"h": 35
+					},
+					"anchor": {
+						"x": 0.5,
+						"y": 0.5
+					}
+				},
+				{
+					"filename": "mm-crawl-5.png",
+					"rotated": false,
+					"trimmed": true,
+					"sourceSize": {
+						"w": 64,
+						"h": 64
+					},
+					"spriteSourceSize": {
+						"x": 7,
+						"y": 12,
+						"w": 56,
+						"h": 38
+					},
+					"frame": {
+						"x": 0,
+						"y": 182,
+						"w": 56,
+						"h": 38
+					},
+					"anchor": {
+						"x": 0.5,
+						"y": 0.5
+					}
+				},
+				{
+					"filename": "mm-crawl-6.png",
+					"rotated": false,
+					"trimmed": true,
+					"sourceSize": {
+						"w": 64,
+						"h": 64
+					},
+					"spriteSourceSize": {
+						"x": 7,
+						"y": 12,
+						"w": 56,
+						"h": 38
+					},
+					"frame": {
+						"x": 0,
+						"y": 220,
+						"w": 56,
+						"h": 38
+					},
+					"anchor": {
+						"x": 0.5,
+						"y": 0.5
+					}
+				},
+				{
+					"filename": "mm-crawl-7.png",
+					"rotated": false,
+					"trimmed": true,
+					"sourceSize": {
+						"w": 64,
+						"h": 64
+					},
+					"spriteSourceSize": {
+						"x": 7,
+						"y": 15,
+						"w": 56,
+						"h": 35
+					},
+					"frame": {
+						"x": 0,
+						"y": 258,
+						"w": 56,
+						"h": 35
+					},
+					"anchor": {
+						"x": 0.5,
+						"y": 0.5
+					}
+				},
+				{
+					"filename": "mm-crawl-8.png",
+					"rotated": false,
+					"trimmed": true,
+					"sourceSize": {
+						"w": 64,
+						"h": 64
+					},
+					"spriteSourceSize": {
+						"x": 5,
+						"y": 16,
+						"w": 59,
+						"h": 35
+					},
+					"frame": {
+						"x": 0,
+						"y": 293,
+						"w": 59,
+						"h": 35
+					},
+					"anchor": {
+						"x": 0.5,
+						"y": 0.5
+					}
+				},
+				{
+					"filename": "mm-crawl-9.png",
+					"rotated": false,
+					"trimmed": true,
+					"sourceSize": {
+						"w": 64,
+						"h": 64
+					},
+					"spriteSourceSize": {
+						"x": 4,
+						"y": 12,
+						"w": 60,
+						"h": 39
+					},
+					"frame": {
+						"x": 0,
+						"y": 328,
+						"w": 60,
+						"h": 39
+					},
+					"anchor": {
+						"x": 0.5,
+						"y": 0.5
+					}
+				},
+				{
+					"filename": "mm-crawl-10.png",
+					"rotated": false,
+					"trimmed": true,
+					"sourceSize": {
+						"w": 64,
+						"h": 64
+					},
+					"spriteSourceSize": {
+						"x": 4,
+						"y": 10,
+						"w": 57,
+						"h": 38
+					},
+					"frame": {
+						"x": 0,
+						"y": 367,
+						"w": 57,
+						"h": 38
+					},
+					"anchor": {
+						"x": 0.5,
+						"y": 0.5
+					}
+				},
+				{
+					"filename": "mm-crawl-11.png",
+					"rotated": false,
+					"trimmed": true,
+					"sourceSize": {
+						"w": 64,
+						"h": 64
+					},
+					"spriteSourceSize": {
+						"x": 4,
+						"y": 11,
+						"w": 57,
+						"h": 38
+					},
+					"frame": {
+						"x": 0,
+						"y": 405,
+						"w": 57,
+						"h": 38
+					},
+					"anchor": {
+						"x": 0.5,
+						"y": 0.5
+					}
+				},
+				{
+					"filename": "mm-crawl-12.png",
+					"rotated": false,
+					"trimmed": true,
+					"sourceSize": {
+						"w": 64,
+						"h": 64
+					},
+					"spriteSourceSize": {
+						"x": 4,
+						"y": 13,
+						"w": 57,
+						"h": 36
+					},
+					"frame": {
+						"x": 0,
+						"y": 443,
+						"w": 57,
+						"h": 36
+					},
+					"anchor": {
+						"x": 0.5,
+						"y": 0.5
+					}
+				},
+				{
+					"filename": "mm-crawl-13.png",
+					"rotated": false,
+					"trimmed": true,
+					"sourceSize": {
+						"w": 64,
+						"h": 64
+					},
+					"spriteSourceSize": {
+						"x": 2,
+						"y": 14,
+						"w": 61,
+						"h": 35
+					},
+					"frame": {
+						"x": 0,
+						"y": 479,
+						"w": 61,
+						"h": 35
+					},
+					"anchor": {
+						"x": 0.5,
+						"y": 0.5
+					}
+				},
+				{
+					"filename": "mm-crawl-14.png",
+					"rotated": false,
+					"trimmed": true,
+					"sourceSize": {
+						"w": 64,
+						"h": 64
+					},
+					"spriteSourceSize": {
+						"x": 2,
+						"y": 14,
+						"w": 61,
+						"h": 35
+					},
+					"frame": {
+						"x": 0,
+						"y": 514,
+						"w": 61,
+						"h": 35
+					},
+					"anchor": {
+						"x": 0.5,
+						"y": 0.5
+					}
+				}
+			]
+		}
+	],
+	"meta": {
+		"app": "https://www.codeandweb.com/texturepacker",
+		"version": "3.0",
+		"smartupdate": "$TexturePacker:SmartUpdate:dfad94f11057e02dfa2fedfc5a27cb8f:b4d3538a822403facfcd0863f87a8e8d:8bf8fa1c3c5f3850e02a97318cafa815$"
+	}
+}

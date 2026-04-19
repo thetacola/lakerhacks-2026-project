@@ -24,32 +24,118 @@ export class Main extends Scene {
         // Calculate dynamic sizing based on screen
         const screenWidth = this.cameras.main.width;
         const screenHeight = this.cameras.main.height;
-        // Get scale factor for consistent sizing
         const scale = this.getScale();
 
         // CREATE 2x3 BUTTON MATRIX AT TOP
         this.createButtonMatrix(scale, screenWidth, screenHeight);
 
-        // Create a larger circle using Phaser's graphics object - now scales with device
-        this.circle = this.add.graphics();
-        this.circle.fillStyle(0xff0000); // Red color
-        const circleRadius = 50 * scale; // Scale the circle size
-        this.circle.fillCircle(0, 0, circleRadius);
+        // Create baby animations
+        this.createBabyAnimations();
 
-        // Position the circle at 3/4 down the screen (75% from top, 25% from bottom)
-        this.circle.x = this.cameras.main.width / 2;
-        this.circle.y = (this.cameras.main.height * 3) / 4;
+        // Create the baby character as an animated sprite
+        this.baby = this.add.sprite(
+            this.cameras.main.width / 2,
+            (this.cameras.main.height * 3) / 4,
+            'baby'
+        );
+        
+        // Scale the baby based on screen size
+        this.baby.setScale(scale * 2.5); // Adjust this multiplier as needed
+        
+        // Start the animation
+        this.baby.play('baby-crawl');
 
         // Start the movement
         this.startMovement();
 
-        // Create bottom taskbar (this will now include the music button and clock)
+        // Create bottom taskbar
         this.createTaskbar();
 
         // Initialize menu state
         this.menuOpen = false;
     }
 
+    createBabyAnimations() {
+        // Create movement animation using only frames 5-9
+        this.anims.create({
+            key: 'baby-crawl',
+            frames: this.anims.generateFrameNames('baby', {
+                prefix: 'mm-crawl-',
+                suffix: '.png',
+                start: 5,
+                end: 9,    // Only frames 5-9
+                zeroPad: 0
+            }),
+            frameRate: 8,  // Adjust this for speed (try 6-12)
+            repeat: -1     // Loop forever
+        });
+    }
+
+    // ... keep all your existing methods (createButtonMatrix, toggleMusic, etc.) ...
+
+    startMovement() {
+        const screenWidth = this.cameras.main.width;
+        const scale = this.getScale();
+        const babyWidth = this.baby.displayWidth / 2;
+        
+        // Since frames 5-9 naturally face right, don't flip initially for moving left
+        this.baby.setFlipX(false);
+        
+        // Move to left side
+        this.tweens.add({
+            targets: this.baby,
+            x: babyWidth,
+            duration: 3000,
+            ease: 'Linear',
+            onComplete: () => {
+                // Flip the baby to face right for moving right
+                this.baby.setFlipX(true);
+                
+                // Move to right side
+                this.tweens.add({
+                    targets: this.baby,
+                    x: screenWidth - babyWidth,
+                    duration: 4000,
+                    ease: 'Linear',
+                    onComplete: () => {
+                        // Flip back to face left for moving back to center
+                        this.baby.setFlipX(false);
+                        
+                        // Return to center
+                        this.tweens.add({
+                            targets: this.baby,
+                            x: screenWidth / 2,
+                            duration: 3000,
+                            ease: 'Linear',
+                            onComplete: () => {
+                                // Restart the cycle
+                                this.startMovement();
+                            }
+                        });
+                    }
+                });
+            }
+        });
+        
+        this.bounceMovement();
+    }
+    
+    bounceMovement() {
+        const screenHeight = this.cameras.main.height;
+        const scale = this.getScale();
+        const bounceDistance = 120 * scale;
+        
+        this.tweens.add({
+            targets: this.baby,
+            y: ((screenHeight * 3) / 4) - bounceDistance,
+            duration: 800,
+            ease: 'Sine.easeInOut',
+            yoyo: true,
+            repeat: -1
+        });
+    }
+
+    // ... keep all your other existing methods unchanged (createButtonMatrix, toggleMusic, etc.) ...
     createButtonMatrix(scale, screenWidth, screenHeight) {
         // Define button matrix layout (2 rows, 3 columns)
         const buttons = [
@@ -58,7 +144,7 @@ export class Main extends Scene {
             { key: 'play', label: 'Play', scene: 'Play' },
             { key: 'feed', label: 'Feed', scene: 'Feed' },
             // Row 2
-            { key: 'gather', label: 'gather', scene: 'Gather' },
+            { key: 'gather', label: 'Gather', scene: 'Gather' },
             { key: 'clean', label: 'Clean', scene: 'Clean' },
             { key: 'sleep', label: 'Sleep', scene: 'Sleep' }
         ];
@@ -404,55 +490,4 @@ export class Main extends Scene {
         }
     }
     
-    startMovement() {
-        const screenWidth = this.cameras.main.width;
-        const scale = this.getScale();
-        const circleRadius = 50 * scale;
-        
-        // Move to left side (accounting for scaled circle size)
-        this.tweens.add({
-            targets: this.circle,
-            x: circleRadius,
-            duration: 3000,
-            ease: 'Linear',
-            onComplete: () => {
-                // Move to right side (accounting for scaled circle size)
-                this.tweens.add({
-                    targets: this.circle,
-                    x: screenWidth - circleRadius,
-                    duration: 4000,
-                    ease: 'Linear',
-                    onComplete: () => {
-                        // Return to center
-                        this.tweens.add({
-                            targets: this.circle,
-                            x: screenWidth / 2,
-                            duration: 3000,
-                            ease: 'Linear',
-                            onComplete: () => {
-                                this.startMovement();
-                            }
-                        });
-                    }
-                });
-            }
-        });
-        
-        this.bounceMovement();
-    }
-    
-    bounceMovement() {
-        const screenHeight = this.cameras.main.height;
-        const scale = this.getScale();
-        const bounceDistance = 120 * scale; // Scale the bounce distance too
-        
-        this.tweens.add({
-            targets: this.circle,
-            y: ((screenHeight * 3) / 4) - bounceDistance, // Bounce from the 3/4 position (bottom area)
-            duration: 800,
-            ease: 'Sine.easeInOut',
-            yoyo: true,
-            repeat: -1
-        });
-    }
 }

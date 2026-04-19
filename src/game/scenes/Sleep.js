@@ -30,22 +30,43 @@ export class Sleep extends Scene {
         // CREATE SINGLE WAKEUP BUTTON AT TOP RIGHT
         this.createWakeupButton(scale, screenWidth, screenHeight);
 
-        // Create a larger circle using Phaser's graphics object - now scales with device
-        this.circle = this.add.graphics();
-        this.circle.fillStyle(0x800000); // Dark red color (darker than Main's red)
-        const circleRadius = 50 * scale; // Scale the circle size
-        this.circle.fillCircle(0, 0, circleRadius);
+        // Create baby animation for sleeping
+        this.createBabySleepAnimation();
 
-        // Position the circle at 3/4 down the screen (75% from top, 25% from bottom) - NO MOVEMENT
-        this.circle.x = this.cameras.main.width / 2;
-        this.circle.y = (this.cameras.main.height * 3) / 4;
-        // Note: No startMovement() call - circle stays stationary
+        // Create the baby sprite using frames 10-14 - stationary at 3/4 down screen
+        this.baby = this.add.sprite(screenWidth / 2, (screenHeight * 3) / 4, 'baby', 'mm-crawl-10.png');
+        this.baby.setScale(scale * 2.5); // Scale appropriately for sleep scene
+        
+        // Start the sleeping animation
+        this.baby.play('baby-sleep');
 
-        // Create bottom taskbar (darker version)
+        // ADD DARK SEMI-TRANSPARENT OVERLAY FOR NIGHTTIME EFFECT - AFTER BABY SO IT COVERS EVERYTHING
+        this.darkOverlay = this.add.graphics();
+        this.darkOverlay.fillStyle(0x000000, 0.4); // Black with 40% opacity
+        this.darkOverlay.fillRect(0, 0, screenWidth, screenHeight);
+        this.darkOverlay.setScrollFactor(0); // Keep it fixed to camera
+
+        // Create bottom taskbar (darker version) - AFTER OVERLAY SO IT APPEARS ON TOP
         this.createTaskbar();
 
         // Initialize menu state
         this.menuOpen = false;
+    }
+
+    createBabySleepAnimation() {
+        // Create sleeping animation using frames 10-14
+        this.anims.create({
+            key: 'baby-sleep',
+            frames: this.anims.generateFrameNames('baby', {
+                prefix: 'mm-crawl-',
+                suffix: '.png',
+                start: 10,
+                end: 14,
+                zeroPad: 0
+            }),
+            frameRate: 4, // Slower frame rate for peaceful sleep
+            repeat: -1    // Loop forever
+        });
     }
 
     createWakeupButton(scale, screenWidth, screenHeight) {
@@ -107,8 +128,6 @@ export class Sleep extends Scene {
         buttonImage.on('pointerup', wakeUp);
         buttonText.on('pointerup', wakeUp);
     }
-
-
 
     toggleMusic() {
         if (this.game.bgMusic) {

@@ -20,6 +20,8 @@ export class Preloader extends Scene
 
     preload ()
     {
+        this.load.atlas('baby', 'assets/baby-0.png', 'assets/baby.json');
+
         // Use full paths as shown in README - no setPath()
         this.load.image('musicOn', 'assets/sound_on.png');
         this.load.image('musicOff', 'assets/sound_mute.png');
