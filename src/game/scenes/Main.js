@@ -3,9 +3,19 @@ import { Scene } from 'phaser';
 export class Main extends Scene {
     constructor() {
         super('Main');
+
+        this.metal = 0;
+        this.plastic = 0;
+        this.magnets = 0;
+        this.happiness = 0;
     }
 
     create() {
+        this.registry.set('metal', this.metal);
+        this.registry.set('plastic', this.plastic);
+        this.registry.set('magnets', this.magnets);
+        this.registry.set('happiness', this.happiness);
+
         // Set a background color for the scene
         this.cameras.main.setBackgroundColor(0x008080);
 
@@ -38,10 +48,10 @@ export class Main extends Scene {
             (this.cameras.main.height * 3) / 4,
             'baby'
         );
-        
+
         // Scale the baby based on screen size
         this.baby.setScale(scale * 2.5); // Adjust this multiplier as needed
-        
+
         // Start the animation
         this.baby.play('baby-crawl');
 
@@ -77,10 +87,10 @@ export class Main extends Scene {
         const screenWidth = this.cameras.main.width;
         const scale = this.getScale();
         const babyWidth = this.baby.displayWidth / 2;
-        
+
         // Since frames 5-9 naturally face right, don't flip initially for moving left
         this.baby.setFlipX(false);
-        
+
         // Move to left side
         this.tweens.add({
             targets: this.baby,
@@ -90,7 +100,7 @@ export class Main extends Scene {
             onComplete: () => {
                 // Flip the baby to face right for moving right
                 this.baby.setFlipX(true);
-                
+
                 // Move to right side
                 this.tweens.add({
                     targets: this.baby,
@@ -100,7 +110,7 @@ export class Main extends Scene {
                     onComplete: () => {
                         // Flip back to face left for moving back to center
                         this.baby.setFlipX(false);
-                        
+
                         // Return to center
                         this.tweens.add({
                             targets: this.baby,
@@ -116,15 +126,15 @@ export class Main extends Scene {
                 });
             }
         });
-        
+
         this.bounceMovement();
     }
-    
+
     bounceMovement() {
         const screenHeight = this.cameras.main.height;
         const scale = this.getScale();
         const bounceDistance = 120 * scale;
-        
+
         this.tweens.add({
             targets: this.baby,
             y: ((screenHeight * 3) / 4) - bounceDistance,
@@ -215,6 +225,7 @@ export class Main extends Scene {
             buttonImage.on('pointerup', goToScene);
             buttonText.on('pointerup', goToScene);
         });
+        this.registry.events.on('changedata', this.updateData, this);
     }
 
     toggleMusic() {
@@ -490,4 +501,67 @@ export class Main extends Scene {
         }
     }
     
+startMovement() {
+    const screenWidth = this.cameras.main.width;
+    const scale = this.getScale();
+    const circleRadius = 50 * scale;
+
+    // Move to left side (accounting for scaled circle size)
+    this.tweens.add({
+        targets: this.circle,
+        x: circleRadius,
+        duration: 3000,
+        ease: 'Linear',
+        onComplete: () => {
+            // Move to right side (accounting for scaled circle size)
+            this.tweens.add({
+                targets: this.circle,
+                x: screenWidth - circleRadius,
+                duration: 4000,
+                ease: 'Linear',
+                onComplete: () => {
+                    // Return to center
+                    this.tweens.add({
+                        targets: this.circle,
+                        x: screenWidth / 2,
+                        duration: 3000,
+                        ease: 'Linear',
+                        onComplete: () => {
+                            this.startMovement();
+                        }
+                    });
+                }
+            });
+        }
+    });
+
+    this.bounceMovement();
+}
+
+bounceMovement() {
+    const screenHeight = this.cameras.main.height;
+    const scale = this.getScale();
+    const bounceDistance = 120 * scale; // Scale the bounce distance too
+
+    this.tweens.add({
+        targets: this.circle,
+        y: ((screenHeight * 3) / 4) - bounceDistance, // Bounce from the 3/4 position (bottom area)
+        duration: 800,
+        ease: 'Sine.easeInOut',
+        yoyo: true,
+        repeat: -1
+    });
+}
+
+updateData(parent, key, data) {
+    if (key === 'metal') {
+        this.metal = data;
+    } else if (key === 'plastic') {
+        this.plastic = data;
+    } else if (key === 'magnets') {
+        this.magnets = data;
+    } else if (key === 'happiness') {
+        this.happiness = data;
+    }
+}
 }

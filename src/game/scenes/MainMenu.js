@@ -7,43 +7,55 @@ export class MainMenu extends Scene
         super('MainMenu');
     }
 
+    init () {
+        var bg = this.add.graphics();
+        bg.fillStyle(0xc0c0c0);
+        bg.fillRect(0, 0, this.cameras.main.width, this.cameras.main.height);
+        bg.lineStyle(2, 0xffffff);
+        bg.strokeRect(0, 0, this.cameras.main.width, 2);
+        bg.strokeRect(0, 0, 2, this.cameras.main.height);
+        bg.lineStyle(2, 0x808080);
+        bg.strokeRect(0, this.cameras.main.height - 2, this.cameras.main.width, 2);
+        bg.strokeRect(this.cameras.main.width - 2, 0, 2, this.cameras.main.height);
+    }
+
     create ()
     {
-        this.add.image(512, 384, 'background');
+        //this.add.image(512, 384, 'background');
 
-        this.add.image(512, 300, 'logo');
+        this.add.image(this.cameras.main.width / 2, 300, 'logo');
 
-        const mainButton = this.add.text(512, 460, 'Main', {
+        const mainButton = this.add.text(this.cameras.main.width / 2, 460, 'Main', {
             fontFamily: 'Arial Black', fontSize: 38, color: '#ffffff',
             stroke: '#000000', strokeThickness: 8,
             align: 'center'
         }).setOrigin(0.5);
 
-        const statsButton = this.add.text(512, 500, 'Stats', {
+        const statsButton = this.add.text(this.cameras.main.width / 2, 500, 'Stats', {
             fontFamily: 'Arial Black', fontSize: 38, color: '#ffffff',
             stroke: '#000000', strokeThickness: 8,
             align: 'center'
         }).setOrigin(0.5);
 
-        const playButton = this.add.text(512, 540, 'Play', {
+        const playButton = this.add.text(this.cameras.main.width / 2, 540, 'Play', {
             fontFamily: 'Arial Black', fontSize: 38, color: '#ffffff',
             stroke: '#000000', strokeThickness: 8,
             align: 'center'
         }).setOrigin(0.5);
 
-        const feedButton = this.add.text(512, 580, 'Feed', {
+        const feedButton = this.add.text(this.cameras.main.width / 2, 580, 'Feed', {
             fontFamily: 'Arial Black', fontSize: 38, color: '#ffffff',
             stroke: '#000000', strokeThickness: 8,
             align: 'center'
         }).setOrigin(0.5);
 
-        const gatherButton = this.add.text(512, 620, 'Gather', {
+        const gatherButton = this.add.text(this.cameras.main.width / 2, 620, 'Gather', {
             fontFamily: 'Arial Black', fontSize: 38, color: '#ffffff',
             stroke: '#000000', strokeThickness: 8,
             align: 'center'
         }).setOrigin(0.5);
 
-        const cleanButton = this.add.text(512, 660, 'Clean', {
+        const cleanButton = this.add.text(this.cameras.main.width / 2, 660, 'Clean', {
             fontFamily: 'Arial Black', fontSize: 38, color: '#ffffff',
             stroke: '#000000', strokeThickness: 8,
             align: 'center'
