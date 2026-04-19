@@ -18,7 +18,6 @@ export class Play extends Scene {
         this.timeLeft = 30; // 30 seconds
         this.gameActive = true;
         this.ballInMotion = false;
-        this.shootingMode = false; // New mode system
 
         // Create court background
         this.createCourt(screenWidth, screenHeight);
@@ -41,9 +40,76 @@ export class Play extends Scene {
         // Set up simple input
         this.setupSimpleInput();
 
+        // Listen for registry changes to update baby color
+        this.registry.events.on('changedata', (parent, key, data) => {
+            if (['phones', 'games', 'computers'].includes(key)) {
+                this.updateBabyColor();
+            }
+        });
+
         console.log('Basketball game started!');
     }
 
+    updateBabyColor() {
+        if (!this.baby) return;
+
+        const phones = this.registry.get('phones') || 0;
+        const games = this.registry.get('games') || 0;
+        const computers = this.registry.get('computers') || 0;
+
+        // If no consumption, clear tint
+        if (phones === 0 && games === 0 && computers === 0) {
+            this.baby.clearTint();
+            return;
+        }
+
+        // Find the maximum value and check for ties
+        const maxValue = Math.max(phones, games, computers);
+        const tiedCount = [phones, games, computers].filter(val => val === maxValue).length;
+        
+        // If there's a tie, stay neutral
+        if (tiedCount > 1) {
+            this.baby.clearTint();
+        } else {
+            // Apply color for the highest value
+            if (computers === maxValue) {
+                this.baby.setTint(0xff0000); // Red
+            } else if (games === maxValue) {
+                this.baby.setTint(0x00ff00); // Green
+            } else if (phones === maxValue) {
+                this.baby.setTint(0x0000ff); // Blue
+            }
+        }
+    }
+
+    createBaby(x, y) {
+        // Create baby animation for basketball playing
+        this.anims.create({
+            key: 'baby-basketball',
+            frames: this.anims.generateFrameNames('baby', {
+                prefix: 'mm-crawl-',
+                suffix: '.png',
+                start: 0,
+                end: 4,
+                zeroPad: 0
+            }),
+            frameRate: 6,
+            repeat: -1
+        });
+        
+        // Create baby sprite at the specified position
+        this.baby = this.add.sprite(x, y, 'baby', 'mm-crawl-0.png');
+        this.baby.setScale(2.5); // Same size as other scenes
+        this.baby.play('baby-basketball');
+
+        // Apply current tint
+        this.updateBabyColor();
+        
+        // Baby stays put - no physics or movement
+        console.log(`Baby created at: ${x}, ${y}`);
+    }
+
+    // ... rest of your existing Play methods remain the same ...
     createCourt(screenWidth, screenHeight) {
         // Create court floor
         const court = this.add.graphics();
@@ -127,30 +193,6 @@ export class Play extends Scene {
         
         console.log(`Basketball created at: ${this.ballStartX}, ${this.ballStartY}`);
         console.log(`Baby positioned at same location`);
-    }
-
-    createBaby(x, y) {
-        // Create baby animation for basketball playing
-        this.anims.create({
-            key: 'baby-basketball',
-            frames: this.anims.generateFrameNames('baby', {
-                prefix: 'mm-crawl-',
-                suffix: '.png',
-                start: 0,
-                end: 4,
-                zeroPad: 0
-            }),
-            frameRate: 6,
-            repeat: -1
-        });
-        
-        // Create baby sprite at the specified position
-        this.baby = this.add.sprite(x, y, 'baby', 'mm-crawl-0.png');
-        this.baby.setScale(2.5); // Same size as other scenes
-        this.baby.play('baby-basketball');
-        
-        // Baby stays put - no physics or movement
-        console.log(`Baby created at: ${x}, ${y}`);
     }
 
     createUI(screenWidth, screenHeight) {

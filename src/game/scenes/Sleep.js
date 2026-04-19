@@ -3,7 +3,6 @@ import { Scene } from 'phaser';
 export class Sleep extends Scene {
     constructor() {
         super('Sleep');
-
         this.hunger = 0;
         this.energy = 100;
         this.fun = 0;
@@ -11,7 +10,6 @@ export class Sleep extends Scene {
     }
 
     create() {
-
         this.hunger = this.registry.get('hunger');
         this.energy = this.registry.get('energy');
         this.fun = this.registry.get('fun');
@@ -51,6 +49,9 @@ export class Sleep extends Scene {
         // Start the sleeping animation
         this.baby.play('baby-sleep');
 
+        // Apply current tint
+        this.updateBabyColor();
+
         // ADD DARK SEMI-TRANSPARENT OVERLAY FOR NIGHTTIME EFFECT - AFTER BABY SO IT COVERS EVERYTHING
         this.darkOverlay = this.add.graphics();
         this.darkOverlay.fillStyle(0x000000, 0.4); // Black with 40% opacity
@@ -63,12 +64,27 @@ export class Sleep extends Scene {
         // Initialize menu state
         this.menuOpen = false;
 
-        this.registry.events.on('changedata', this.updateData, this);
+        // Listen for registry changes
+        this.registry.events.on('changedata', (parent, key, data) => {
+            if (['phones', 'games', 'computers'].includes(key)) {
+                this.updateBabyColor();
+            }
+            // Also handle other data updates
+            if (key === 'hunger') {
+                this.hunger = data;
+            } else if (key === 'energy') {
+                this.energy = data;
+            } else if (key === 'fun') {
+                this.fun = data;
+            } else if (key === 'cleanliness') {
+                this.cleanliness = data;
+            }
+        });
+
         var decreaseTimer = this.time.addEvent({
             delay: 6000, // ms
             callback: this.decreaseStats,
             args: [this],
-            //callbackScope: thisArg,
             loop: true
         });
         var increaseTime = this.time.addEvent({
@@ -77,6 +93,38 @@ export class Sleep extends Scene {
             args: [this],
             loop: true
         });
+    }
+
+    updateBabyColor() {
+        if (!this.baby) return;
+
+        const phones = this.registry.get('phones') || 0;
+        const games = this.registry.get('games') || 0;
+        const computers = this.registry.get('computers') || 0;
+
+        // If no consumption, clear tint
+        if (phones === 0 && games === 0 && computers === 0) {
+            this.baby.clearTint();
+            return;
+        }
+
+        // Find the maximum value and check for ties
+        const maxValue = Math.max(phones, games, computers);
+        const tiedCount = [phones, games, computers].filter(val => val === maxValue).length;
+        
+        // If there's a tie, stay neutral
+        if (tiedCount > 1) {
+            this.baby.clearTint();
+        } else {
+            // Apply color for the highest value
+            if (computers === maxValue) {
+                this.baby.setTint(0xff0000); // Red
+            } else if (games === maxValue) {
+                this.baby.setTint(0x00ff00); // Green
+            } else if (phones === maxValue) {
+                this.baby.setTint(0x0000ff); // Blue
+            }
+        }
     }
 
     createBabySleepAnimation() {
@@ -95,6 +143,7 @@ export class Sleep extends Scene {
         });
     }
 
+    // ... rest of your existing Sleep methods remain the same ...
     increaseEnergy(scene) {
         if (scene.energy <= 99) {
             scene.energy = scene.energy + 1;
@@ -479,18 +528,6 @@ export class Sleep extends Scene {
         if (this.menuItems) {
             this.menuItems.forEach(item => item.destroy());
             this.menuItems = [];
-        }
-    }
-
-    updateData(parent, key, data) {
-        if (key === 'hunger') {
-            this.hunger = data;
-        } else if (key === 'energy') {
-            this.energy = data;
-        } else if (key === 'fun') {
-            this.fun = data;
-        } else if (key === 'cleanliness') {
-            this.cleanliness = data;
         }
     }
 }

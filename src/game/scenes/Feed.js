@@ -34,6 +34,9 @@ export class Feed extends Scene {
         this.baby.setScale(2.5);
         this.baby.play('baby-feed');
         
+        // Apply current tint
+        this.updateBabyColor();
+        
         // Create title
         this.add.text(screenWidth / 2, 50, 'FEED THE RECYCLER', {
             fontFamily: 'Arial Black',
@@ -61,74 +64,104 @@ export class Feed extends Scene {
         // Variables for eating animation
         this.isEating = false;
         this.currentEatingItem = null;
+        
+        // Listen for registry changes to update baby color
+        this.registry.events.on('changedata', (parent, key, data) => {
+            if (['phones', 'games', 'computers'].includes(key)) {
+                this.updateBabyColor();
+            }
+        });
+    }
+
+    updateBabyColor() {
+        if (!this.baby) return;
+
+        const phones = this.registry.get('phones') || 0;
+        const games = this.registry.get('games') || 0;
+        const computers = this.registry.get('computers') || 0;
+
+        // If no consumption, clear tint
+        if (phones === 0 && games === 0 && computers === 0) {
+            this.baby.clearTint();
+            return;
+        }
+
+        // Find the maximum value and check for ties
+        const maxValue = Math.max(phones, games, computers);
+        const tiedCount = [phones, games, computers].filter(val => val === maxValue).length;
+        
+        // If there's a tie, stay neutral
+        if (tiedCount > 1) {
+            this.baby.clearTint();
+        } else {
+            // Apply color for the highest value
+            if (computers === maxValue) {
+                this.baby.setTint(0xff0000); // Red
+            } else if (games === maxValue) {
+                this.baby.setTint(0x00ff00); // Green
+            } else if (phones === maxValue) {
+                this.baby.setTint(0x0000ff); // Blue
+            }
+        }
     }
 
     createInventoryDisplay(screenWidth, screenHeight) {
-        const inventoryY = 200; // Moved down a bit to accommodate larger icons
-        const itemSpacing = 280; // Increased spacing for larger icons
+        const inventoryY = 200;
+        const itemSpacing = 280;
         const startX = screenWidth / 2 - itemSpacing;
         
-        // Define item properties - get current counts from registry
         const items = [
             { 
                 key: 'phone', 
                 label: 'Phone', 
                 count: this.registry.get('phonesFound') || 0, 
                 statKey: 'phonesFound',
-                displayStatKey: 'phones' // This is what shows in Stats scene
+                displayStatKey: 'phones'
             },
             { 
                 key: 'game', 
                 label: 'Game', 
                 count: this.registry.get('gamesFound') || 0, 
                 statKey: 'gamesFound',
-                displayStatKey: 'games' // This is what shows in Stats scene
+                displayStatKey: 'games'
             },
             { 
                 key: 'computer', 
                 label: 'Computer', 
                 count: this.registry.get('computersFound') || 0, 
                 statKey: 'computersFound',
-                displayStatKey: 'computers' // This is what shows in Stats scene
+                displayStatKey: 'computers'
             }
         ];
         
-        console.log('Current counts:', items.map(item => `${item.label}: ${item.count}`));
-        
-        // Create simple display without containers
         items.forEach((item, index) => {
             const x = startX + (index * itemSpacing);
             
-            // Create item sprite - 4x LARGER (was 0.5, now 2.0)
             const sprite = this.add.image(x, inventoryY, item.key);
-            sprite.setScale(2.0); // 4x larger than before
+            sprite.setScale(2.0);
             
-            // Create count text - moved further down and larger font
             const countText = this.add.text(x, inventoryY + 120, `x${item.count}`, {
                 fontFamily: 'Arial Black',
-                fontSize: 32, // Larger font (was 20)
+                fontSize: 32,
                 color: '#ffffff',
                 stroke: '#000000',
-                strokeThickness: 3, // Thicker stroke
+                strokeThickness: 3,
                 align: 'center'
             }).setOrigin(0.5);
             
-            // Create label text - moved further down and larger font
             const labelText = this.add.text(x, inventoryY + 160, item.label, {
                 fontFamily: 'Arial Black',
-                fontSize: 24, // Larger font (was 16)
+                fontSize: 24,
                 color: '#ffffff',
                 stroke: '#000000',
-                strokeThickness: 3, // Thicker stroke
+                strokeThickness: 3,
                 align: 'center'
             }).setOrigin(0.5);
             
-            // Store references
             sprite.itemData = item;
             sprite.countText = countText;
             sprite.labelText = labelText;
             
-            // Make interactive if items are available
             if (item.count > 0) {
                 sprite.setTint(0xffffff);
                 labelText.setColor('#ffffff');
@@ -138,18 +171,12 @@ export class Feed extends Scene {
                 
                 sprite.on('pointerdown', () => {
                     if (!this.isEating) {
-                        console.log(`Clicked ${item.label}, current count: ${item.count}`);
                         this.feedItem(sprite);
                     }
                 });
                 
-                sprite.on('pointerover', () => {
-                    sprite.setTint(0xffff00);
-                });
-                
-                sprite.on('pointerout', () => {
-                    sprite.setTint(0xffffff);
-                });
+                sprite.on('pointerover', () => sprite.setTint(0xffff00));
+                sprite.on('pointerout', () => sprite.setTint(0xffffff));
             } else {
                 sprite.setTint(0x666666);
                 labelText.setColor('#666666');
@@ -160,33 +187,20 @@ export class Feed extends Scene {
 
     feedItem(sprite) {
         const item = sprite.itemData;
-        console.log(`Feeding ${item.label}`);
-        
-        // Check current count from registry
         const currentCount = this.registry.get(item.statKey) || 0;
-        console.log(`Current ${item.statKey}:`, currentCount);
         
-        if (currentCount <= 0) {
-            console.log('No items to feed');
-            return;
-        }
+        if (currentCount <= 0) return;
         
         this.isEating = true;
         
-        // Decrease count in registry (for inventory)
         this.registry.set(item.statKey, currentCount - 1);
-        console.log(`Updated ${item.statKey} to:`, currentCount - 1);
         
-        // ALSO UPDATE THE DISPLAY STAT (for Stats scene bars) - ADD 5 POINTS PER ITEM
         const currentDisplayStat = this.registry.get(item.displayStatKey) || 0;
-        const newDisplayStat = Math.min(100, currentDisplayStat + 5); // Add 5 points, max 100
+        const newDisplayStat = Math.min(100, currentDisplayStat + 5);
         this.registry.set(item.displayStatKey, newDisplayStat);
-        console.log(`Updated ${item.displayStatKey} from ${currentDisplayStat} to ${newDisplayStat}`);
         
-        // Update display
         sprite.countText.setText(`x${currentCount - 1}`);
         
-        // If count is 0, disable interaction
         if (currentCount - 1 <= 0) {
             sprite.setTint(0x666666);
             sprite.labelText.setColor('#666666');
@@ -194,39 +208,27 @@ export class Feed extends Scene {
             sprite.disableInteractive();
         }
         
-        // Create eating animation
         this.createSimpleEatingAnimation(item);
-        
-        // Increase hunger stat
         this.increaseHunger();
     }
 
     createSimpleEatingAnimation(item) {
-        console.log('Starting eating animation for:', item.label);
-        
-        // Position item above baby
         const itemX = this.baby.x;
         const itemY = this.baby.y - 100;
         
-        // Create the item sprite - larger for eating animation too
         const eatingItem = this.add.image(itemX, itemY, item.key);
-        eatingItem.setScale(1.5); // Larger eating item (was 0.8)
+        eatingItem.setScale(1.5);
         this.currentEatingItem = eatingItem;
         
-        // Simple eating animation using scale and alpha
         let biteCount = 0;
         const totalBites = 4;
         
         const takeBite = () => {
-            console.log(`Taking bite ${biteCount + 1}/${totalBites}`);
-            
             if (biteCount >= totalBites) {
-                console.log('Finished eating');
                 this.finishEating();
                 return;
             }
             
-            // Shrink the item and make it more transparent
             const newScale = eatingItem.scaleX * 0.7;
             const newAlpha = eatingItem.alpha * 0.8;
             
@@ -240,7 +242,6 @@ export class Feed extends Scene {
                 onComplete: () => {
                     biteCount++;
                     if (biteCount < totalBites) {
-                        // Schedule next bite with a delay
                         this.time.delayedCall(200, () => {
                             if (this.currentEatingItem && this.scene.isActive()) {
                                 takeBite();
@@ -253,7 +254,6 @@ export class Feed extends Scene {
             });
         };
         
-        // Start eating animation after a small delay
         this.time.delayedCall(100, () => {
             if (this.currentEatingItem && this.scene.isActive()) {
                 takeBite();
@@ -262,28 +262,19 @@ export class Feed extends Scene {
     }
 
     finishEating() {
-        console.log('Finishing eating animation');
-        
-        // Remove eating item
         if (this.currentEatingItem) {
             this.currentEatingItem.destroy();
             this.currentEatingItem = null;
         }
         
-        // Create satisfied particles
         this.createSatisfiedEffect();
         
-        // Reset eating state after particles
         this.time.delayedCall(1000, () => {
-            console.log('Eating state reset');
             this.isEating = false;
         });
     }
 
     createSatisfiedEffect() {
-        console.log('Creating satisfied effect');
-        
-        // Create small heart particles to show satisfaction
         for (let i = 0; i < 5; i++) {
             const heart = this.add.text(
                 this.baby.x + (Math.random() - 0.5) * 100,
@@ -295,7 +286,6 @@ export class Feed extends Scene {
                 }
             );
             
-            // Animate hearts floating up
             this.tweens.add({
                 targets: heart,
                 y: heart.y - 100,
@@ -313,13 +303,10 @@ export class Feed extends Scene {
         const newHunger = Math.min(100, currentHunger + 20);
         this.registry.set('hunger', newHunger);
         
-        // Update happiness
         const energy = this.registry.get('energy') || 0;
         const fun = this.registry.get('fun') || 0;
         const cleanliness = this.registry.get('cleanliness') || 0;
         const newHappiness = (newHunger + energy + fun + cleanliness) / 4;
         this.registry.set('happiness', newHappiness);
-        
-        console.log(`Hunger increased to ${newHunger}, happiness: ${newHappiness}`);
     }
 }

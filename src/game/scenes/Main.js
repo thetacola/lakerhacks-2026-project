@@ -3,44 +3,77 @@ import { Scene } from 'phaser';
 export class Main extends Scene {
     constructor() {
         super('Main');
-
+        
+        // Initialize stats
         this.computers = 0;
         this.phones = 0;
         this.games = 0;
-
         this.hunger = 0;
         this.energy = 100;
         this.fun = 0;
         this.cleanliness = 100;
+        
+        // UI state
+        this.menuOpen = false;
+        this.isMusicPlaying = false;
     }
 
     create() {
+        // Initialize registry with current values
+        this.initializeRegistry();
+        
+        // Set background and music
+        this.cameras.main.setBackgroundColor(0x008080);
+        this.setupBackgroundMusic();
+        
+        // Get screen dimensions
+        const screenWidth = this.cameras.main.width;
+        const screenHeight = this.cameras.main.height;
+
+        // Create all game elements
+        this.createButtonMatrix(screenWidth, screenHeight);
+        this.createBabyAnimations();
+        this.createBaby();
+        this.createTaskbar(screenWidth, screenHeight);
+        
+        // Start game systems
+        this.startBabyMovement();
+        this.startStatDecrease();
+        
+        // Set up registry listener for color updates
+        this.registry.events.on('changedata', this.handleRegistryChange, this);
+        
+        // Update baby color after a small delay
+        this.time.delayedCall(100, () => this.updateBabyColor());
+    }
+
+    initializeRegistry() {
+        // Set current stats
         this.registry.set('computers', this.computers);
         this.registry.set('phones', this.phones);
         this.registry.set('games', this.games);
-
         this.registry.set('hunger', this.hunger);
         this.registry.set('energy', this.energy);
         this.registry.set('fun', this.fun);
         this.registry.set('cleanliness', this.cleanliness);
+        
+        // Initialize collection stats if they don't exist
+        ['phonesFound', 'gamesFound', 'computersFound'].forEach(stat => {
+            if (!this.registry.has(stat)) {
+                this.registry.set(stat, 0);
+            }
+        });
+        
+        // Calculate and set happiness
+        this.updateHappiness();
+    }
 
-        // Initialize hidden e-waste collection stats
-        if (!this.registry.has('phonesFound')) {
-            this.registry.set('phonesFound', 0);
-        }
-        if (!this.registry.has('gamesFound')) {
-            this.registry.set('gamesFound', 0);
-        }
-        if (!this.registry.has('computersFound')) {
-            this.registry.set('computersFound', 0);
-        }
+    updateHappiness() {
+        const happiness = (this.hunger + this.energy + this.fun + this.cleanliness) / 4;
+        this.registry.set('happiness', happiness);
+    }
 
-        this.registry.set('happiness', (this.hunger + this.energy + this.fun + this.cleanliness) / 4);
-
-        // Set a background color for the scene
-        this.cameras.main.setBackgroundColor(0x008080);
-
-        // Start background music
+    setupBackgroundMusic() {
         if (!this.game.bgMusic || !this.game.bgMusic.isPlaying) {
             this.game.bgMusic = this.sound.add('bgMusic', {
                 volume: 0.5,
@@ -48,153 +81,108 @@ export class Main extends Scene {
             });
             this.game.bgMusic.play();
         }
-
-        // Track music state
         this.isMusicPlaying = this.game.bgMusic && this.game.bgMusic.isPlaying;
-
-        // Calculate dynamic sizing based on screen
-        const screenWidth = this.cameras.main.width;
-        const screenHeight = this.cameras.main.height;
-        const scale = this.getScale();
-
-        // CREATE 2x3 BUTTON MATRIX AT TOP
-        this.createButtonMatrix(scale, screenWidth, screenHeight);
-
-        // Create baby animations
-        this.createBabyAnimations();
-
-        // Create the baby character as an animated sprite
-        this.baby = this.add.sprite(
-            this.cameras.main.width / 2,
-            (this.cameras.main.height * 3) / 4,
-            'baby'
-        );
-
-        // Scale the baby based on screen size
-        this.baby.setScale(scale * 2.5); // Adjust this multiplier as needed
-
-        // Start the animation
-        this.baby.play('baby-crawl');
-
-        // Start the movement
-        this.startMovement();
-
-        // Create bottom taskbar
-        this.createTaskbar();
-
-        // Initialize menu state
-        this.menuOpen = false;
-
-        var timer = this.time.addEvent({
-            delay: 6000, // ms
-            callback: this.decreaseStats,
-            args: [this],
-            //callbackScope: thisArg,
-            loop: true,
-        });
-    }
-
-    decreaseStats(scene) {
-        if (scene.hunger >= 1) {
-            scene.hunger = scene.hunger - 1;
-        }
-        if (scene.energy >= 1) {
-            scene.energy = scene.energy - 1;
-        }
-        if (scene.fun >= 1) {
-            scene.fun = scene.fun - 1;
-        }
-        if (scene.cleanliness >= 1) {
-            scene.cleanliness = scene.cleanliness - 1;
-        }
-
-        var oldHappiness = scene.registry.get('happiness');
-
-        scene.registry.set('computers', scene.computers);
-        scene.registry.set('phones', scene.phones);
-        scene.registry.set('games', scene.games);
-        scene.registry.set('hunger', scene.hunger);
-        scene.registry.set('energy', scene.energy);
-        scene.registry.set('fun', scene.fun);
-        scene.registry.set('cleanliness', scene.cleanliness);
-
-        var newHappiness = (scene.hunger + scene.energy + scene.fun + scene.cleanliness) / 4;
-        scene.registry.set('happiness', newHappiness);
-
-        console.log("Old happiness: ", oldHappiness, " → New happiness: ", scene.registry.get('happiness'));
     }
 
     createBabyAnimations() {
-        // Create movement animation using only frames 5-9
         this.anims.create({
             key: 'baby-crawl',
             frames: this.anims.generateFrameNames('baby', {
                 prefix: 'mm-crawl-',
                 suffix: '.png',
                 start: 5,
-                end: 9,    // Only frames 5-9
+                end: 9,
                 zeroPad: 0
             }),
-            frameRate: 8,  // Adjust this for speed (try 6-12)
-            repeat: -1     // Loop forever
+            frameRate: 8,
+            repeat: -1
         });
     }
 
-    startMovement() {
+    createBaby() {
+        this.baby = this.add.sprite(
+            this.cameras.main.width / 2,
+            (this.cameras.main.height * 3) / 4,
+            'baby'
+        );
+        this.baby.setScale(2.5);
+        this.baby.play('baby-crawl');
+        this.updateBabyColor();
+    }
+
+    updateBabyColor() {
+        const phones = this.registry.get('phones') || 0;
+        const games = this.registry.get('games') || 0;
+        const computers = this.registry.get('computers') || 0;
+
+        // If no consumption, clear tint
+        if (phones === 0 && games === 0 && computers === 0) {
+            if (this.baby) this.baby.clearTint();
+            return;
+        }
+
+        // Find the maximum value and check for ties
+        const maxValue = Math.max(phones, games, computers);
+        const tiedCount = [phones, games, computers].filter(val => val === maxValue).length;
+        
+        let tintColor = 0xffffff;
+        
+        // If there's a tie, stay neutral
+        if (tiedCount > 1) {
+            tintColor = 0xffffff;
+        } else {
+            // Apply color for the highest value
+            if (computers === maxValue) tintColor = 0xff0000; // Red
+            else if (games === maxValue) tintColor = 0x00ff00; // Green
+            else if (phones === maxValue) tintColor = 0x0000ff; // Blue
+        }
+
+        if (this.baby) {
+            if (tintColor === 0xffffff) {
+                this.baby.clearTint();
+            } else {
+                this.baby.setTint(tintColor);
+            }
+        }
+    }
+
+    startBabyMovement() {
         const screenWidth = this.cameras.main.width;
-        const scale = this.getScale();
+        const screenHeight = this.cameras.main.height;
         const babyWidth = this.baby.displayWidth / 2;
 
-        // Since frames 5-9 naturally face right, don't flip initially for moving left
+        // Horizontal movement cycle
         this.baby.setFlipX(false);
-
-        // Move to left side
         this.tweens.add({
             targets: this.baby,
             x: babyWidth,
             duration: 3000,
             ease: 'Linear',
             onComplete: () => {
-                // Flip the baby to face right for moving right
                 this.baby.setFlipX(true);
-
-                // Move to right side
                 this.tweens.add({
                     targets: this.baby,
                     x: screenWidth - babyWidth,
                     duration: 4000,
                     ease: 'Linear',
                     onComplete: () => {
-                        // Flip back to face left for moving back to center
                         this.baby.setFlipX(false);
-
-                        // Return to center
                         this.tweens.add({
                             targets: this.baby,
                             x: screenWidth / 2,
                             duration: 3000,
                             ease: 'Linear',
-                            onComplete: () => {
-                                // Restart the cycle
-                                this.startMovement();
-                            }
+                            onComplete: () => this.startBabyMovement()
                         });
                     }
                 });
             }
         });
 
-        this.bounceMovement();
-    }
-
-    bounceMovement() {
-        const screenHeight = this.cameras.main.height;
-        const scale = this.getScale();
-        const bounceDistance = 120 * scale;
-
+        // Vertical bounce movement
         this.tweens.add({
             targets: this.baby,
-            y: ((screenHeight * 3) / 4) - bounceDistance,
+            y: ((screenHeight * 3) / 4) - 120,
             duration: 800,
             ease: 'Sine.easeInOut',
             yoyo: true,
@@ -202,14 +190,47 @@ export class Main extends Scene {
         });
     }
 
-    createButtonMatrix(scale, screenWidth, screenHeight) {
+    startStatDecrease() {
+        this.time.addEvent({
+            delay: 6000,
+            callback: () => {
+                // Decrease stats
+                this.hunger = Math.max(0, this.hunger - 1);
+                this.energy = Math.max(0, this.energy - 1);
+                this.fun = Math.max(0, this.fun - 1);
+                this.cleanliness = Math.max(0, this.cleanliness - 1);
+
+                // Update registry
+                this.registry.set('hunger', this.hunger);
+                this.registry.set('energy', this.energy);
+                this.registry.set('fun', this.fun);
+                this.registry.set('cleanliness', this.cleanliness);
+
+                // Update happiness
+                this.updateHappiness();
+            },
+            loop: true
+        });
+    }
+
+    handleRegistryChange(parent, key, data) {
+        // Update local stats on registry changes
+        if (['computers', 'phones', 'games', 'hunger', 'energy', 'fun', 'cleanliness'].includes(key)) {
+            this[key] = data;
+        }
+
+        // Update baby color when e-waste stats change
+        if (['phones', 'games', 'computers'].includes(key)) {
+            this.updateBabyColor();
+        }
+    }
+
+    createButtonMatrix(screenWidth, screenHeight) {
         // Define button matrix layout (2 rows, 3 columns)
         const buttons = [
-            // Row 1
             { key: 'stats', label: 'Stats', scene: 'Stats' },
             { key: 'play', label: 'Play', scene: 'Play' },
             { key: 'feed', label: 'Feed', scene: 'Feed' },
-            // Row 2
             { key: 'gather', label: 'Gather', scene: 'Gather' },
             { key: 'clean', label: 'Clean', scene: 'Clean' },
             { key: 'sleep', label: 'Sleep', scene: 'Sleep' }
@@ -281,7 +302,6 @@ export class Main extends Scene {
             buttonImage.on('pointerup', goToScene);
             buttonText.on('pointerup', goToScene);
         });
-        this.registry.events.on('changedata', this.updateData, this);
     }
 
     toggleMusic() {
@@ -322,10 +342,7 @@ export class Main extends Scene {
         return 1;
     }
     
-    createTaskbar() {
-        const screenWidth = this.cameras.main.width;
-        const screenHeight = this.cameras.main.height;
-        
+    createTaskbar(screenWidth, screenHeight) {
         // FIXED sizes - no more scaling
         const taskbarHeight = 50;
         const buttonWidth = 80;
@@ -568,5 +585,4 @@ export class Main extends Scene {
             this.cleanliness = data;
         }
     }
-
 }

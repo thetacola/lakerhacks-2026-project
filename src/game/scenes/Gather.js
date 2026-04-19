@@ -56,6 +56,16 @@ export class Gather extends Scene {
         this.baby.setScale(2.5);
         this.baby.play('baby-gather');
 
+        // Apply current tint
+        this.updateBabyColor();
+
+        // Listen for registry changes to update baby color
+        this.registry.events.on('changedata', (parent, key, data) => {
+            if (['phones', 'games', 'computers'].includes(key)) {
+                this.updateBabyColor();
+            }
+        });
+
         // Create TAP prompt at top center
         this.tapPrompt = this.add.text(screenWidth / 2, 60, 'TAP', {
             fontFamily: 'Arial Black',
@@ -84,6 +94,39 @@ export class Gather extends Scene {
         console.log('Gather scene setup complete');
     }
 
+    updateBabyColor() {
+        if (!this.baby) return;
+
+        const phones = this.registry.get('phones') || 0;
+        const games = this.registry.get('games') || 0;
+        const computers = this.registry.get('computers') || 0;
+
+        // If no consumption, clear tint
+        if (phones === 0 && games === 0 && computers === 0) {
+            this.baby.clearTint();
+            return;
+        }
+
+        // Find the maximum value and check for ties
+        const maxValue = Math.max(phones, games, computers);
+        const tiedCount = [phones, games, computers].filter(val => val === maxValue).length;
+        
+        // If there's a tie, stay neutral
+        if (tiedCount > 1) {
+            this.baby.clearTint();
+        } else {
+            // Apply color for the highest value
+            if (computers === maxValue) {
+                this.baby.setTint(0xff0000); // Red
+            } else if (games === maxValue) {
+                this.baby.setTint(0x00ff00); // Green
+            } else if (phones === maxValue) {
+                this.baby.setTint(0x0000ff); // Blue
+            }
+        }
+    }
+
+    // ... rest of your existing Gather methods remain the same ...
     createBackground(screenWidth, screenHeight) {
         // Calculate horizon line (where sky meets ground)
         const horizonY = screenHeight * 0.6; // 60% down from top
