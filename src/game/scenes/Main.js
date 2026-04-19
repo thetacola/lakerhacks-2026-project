@@ -4,9 +4,9 @@ export class Main extends Scene {
     constructor() {
         super('Main');
 
-        this.metal = 0;
-        this.plastic = 0;
-        this.magnets = 0;
+        this.computers = 0;
+        this.phones = 0;
+        this.games = 0;
 
         this.hunger = 0;
         this.energy = 100;
@@ -15,9 +15,9 @@ export class Main extends Scene {
     }
 
     create() {
-        this.registry.set('metal', this.metal);
-        this.registry.set('plastic', this.plastic);
-        this.registry.set('magnets', this.magnets);
+        this.registry.set('computers', this.computers);
+        this.registry.set('phones', this.phones);
+        this.registry.set('games', this.games);
 
         this.registry.set('hunger', this.hunger);
         this.registry.set('energy', this.energy);
@@ -110,9 +110,9 @@ export class Main extends Scene {
 
         var oldHappiness = scene.registry.get('happiness');
 
-        scene.registry.set('metal', scene.metal);
-        scene.registry.set('plastic', scene.plastic);
-        scene.registry.set('magnets', scene.magnets);
+        scene.registry.set('computers', scene.computers);
+        scene.registry.set('phones', scene.phones);
+        scene.registry.set('games', scene.games);
         scene.registry.set('hunger', scene.hunger);
         scene.registry.set('energy', scene.energy);
         scene.registry.set('fun', scene.fun);
@@ -552,12 +552,12 @@ export class Main extends Scene {
     }
 
     updateData(parent, key, data) {
-        if (key === 'metal') {
-            this.metal = data;
-        } else if (key === 'plastic') {
-            this.plastic = data;
-        } else if (key === 'magnets') {
-            this.magnets = data;
+        if (key === 'computers') {
+            this.computers = data;
+        } else if (key === 'phones') {
+            this.phones = data;
+        } else if (key === 'games') {
+            this.games = data;
         } else if (key === 'hunger') {
             this.hunger = data;
         } else if (key === 'energy') {

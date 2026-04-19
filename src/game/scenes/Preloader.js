@@ -24,6 +24,7 @@ export class Preloader extends Scene
         this.load.atlas('baby-basketball', 'assets/baby-basketball-0.png', 'assets/baby-basketball.json');
         this.load.atlas('trash', 'assets/trash-0.png', 'assets/trash.json');
 
+
         // Use full paths as shown in README - no setPath()
         this.load.image('musicOn', 'assets/sound_on.png');
         this.load.image('musicOff', 'assets/sound_mute.png');
@@ -53,6 +54,7 @@ export class Preloader extends Scene
         this.load.image('computer', 'assets/computer.png');
         this.load.image('phone', 'assets/phone.png');
         this.load.image('game', 'assets/game.png');
+        this.load.image('backetball', 'assets/basketball.png');
     }
 
     create ()

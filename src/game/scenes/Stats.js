@@ -6,9 +6,9 @@ export class Stats extends Scene
     {
         super('Stats');
 
-        this.metal = 0;
-        this.plastic = 0;
-        this.magnets = 0;
+        this.computers = 0;
+        this.phones = 0;
+        this.games = 0;
         this.happiness = 0;
     }
 
@@ -41,9 +41,9 @@ export class Stats extends Scene
     create ()
     {
 
-        this.metal = this.registry.get('metal');
-        this.plastic = this.registry.get('plastic');
-        this.magnets = this.registry.get('magnets');
+        this.computers = this.registry.get('computers') || 0;
+        this.phones = this.registry.get('phones') || 0;
+        this.games = this.registry.get('games') || 0;
         this.happiness = this.registry.get('happiness');
 
         this.add.text(10, 16, 'Stats', {
@@ -51,9 +51,9 @@ export class Stats extends Scene
             align: 'left'
         }).setOrigin(0.0, 0.5);
 
-        this.metalButton =  createLoadingBar('Metals', 10, 100, this.metal, this);
-        this.plasticButton = createLoadingBar('Plastic', 10, 150, this.plastic, this);
-        this.magnetsButton = createLoadingBar('Magnets', 10, 200, this.magnets, this);
+        this.computersButton = createLoadingBar('Computers', 10, 100, this.computers, this);
+        this.phonesButton = createLoadingBar('Phones', 10, 150, this.phones, this);
+        this.gamesButton = createLoadingBar('Game Consoles', 10, 200, this.games, this);
         this.happinessPercent = createLoadingBar('Happiness', 10, 250, this.happiness, this);
 
         const statusBg = this.add.image(10, 275, 'dialog-box').setOrigin(0.0);
@@ -76,19 +76,19 @@ export class Stats extends Scene
             align: 'left'
         }).setOrigin(0.5);
 
-        this.metalButton.setInteractive();
-        this.plasticButton.setInteractive();
-        this.magnetsButton.setInteractive();
+        this.computersButton.setInteractive();
+        this.phonesButton.setInteractive();
+        this.gamesButton.setInteractive();
         backButton.setInteractive();
 
-        this.metalButton.on('pointerdown', () => {
-           statText.setText('E-waste oftentimes contains heavy metals, such as lead and mercury. When these metals are put in a landfill, they oftentimes seep into the soil and groundwater, contaminating the environment and leading to health problems for those who live around it. Instead of going to a landfill, these metals can instead be recycled, being put into new electronic devices and preventing them from spreading into the environment.')
+        this.computersButton.on('pointerdown', () => {
+           statText.setText('Computers contain valuable materials like precious metals, rare earth elements, and reusable components. When disposed of improperly, they can leak toxic substances like lead, mercury, and cadmium into the environment. Proper recycling allows these materials to be recovered and reused, reducing the need for new mining and preventing environmental contamination.');
         });
-        this.plasticButton.on('pointerdown', () => {
-           statText.setText('Many different electronic devices use plastic, especially in their exterior cases. When put into landfills, the plastic falls apart, leaving microplastics in the soil. Most other materials are broken up and decomposed by bacteria, however plastics are an exception. The items themselves can last for hundreds of years, though the microscopic plastic particles still remain. Unfortunately, there is also no known way for many different types of plastics used in electronic devices to be recycled. Thankfully, $lil_guy_name can handle plastic no problem!');
+        this.phonesButton.on('pointerdown', () => {
+           statText.setText('Mobile phones contain precious metals like gold, silver, and platinum, as well as rare earth elements. Despite their small size, phones have a significant environmental impact due to the mining required for their components. Recycling phones helps recover these valuable materials and prevents toxic substances from entering landfills and groundwater.');
         });
-        this.magnetsButton.on('pointerdown', () => {
-            statText.setText('The risks of magnets in e-waste is similar to that of metals. However, magnets oftentimes contain specific metals that are considered as both in limited supply and essential to electronics. Like metals, magnets can seep out contaminants into the surrounding soil and groundwater when in a landfill. Recycling magnets makes sure that these rare metals still have some supply, and prevents them from causing harm in a landfill.');
+        this.gamesButton.on('pointerdown', () => {
+            statText.setText('Game consoles contain complex electronic components including processors, memory chips, and circuit boards with valuable metals. They often contain hazardous materials like lead-based solder and flame retardants. Proper e-waste recycling ensures these materials are safely processed and valuable components can be reused in new electronics.');
         });
         backButton.on('pointerup', () => {
             this.scene.start('Main');
@@ -116,15 +116,14 @@ export class Stats extends Scene
     }
 
     updateData (parent, key, data) {
-        if (key === 'metal') {
-            this.metal = data;
-        } else if (key === 'plastic') {
-            this.plastic = data;
-        } else if (key === 'magnets') {
-            this.magnets = data;
+        if (key === 'computers') {
+            this.computers = data;
+        } else if (key === 'phones') {
+            this.phones = data;
+        } else if (key === 'games') {
+            this.games = data;
         } else if (key === 'happiness') {
             this.happiness = data;
         }
-
     }
 }
