@@ -21,6 +21,7 @@ export class Preloader extends Scene
     preload ()
     {
         this.load.atlas('baby', 'assets/baby-0.png', 'assets/baby.json');
+        this.load.atlas('trash', 'assets/trash-0.png', 'assets/trash.json');
 
         // Use full paths as shown in README - no setPath()
         this.load.image('musicOn', 'assets/sound_on.png');
@@ -45,6 +46,7 @@ export class Preloader extends Scene
         this.load.image('bubble5', 'assets/bubble_5.png');
         this.load.image('bubble6', 'assets/bubble_6.png');
         this.load.image('bubble7', 'assets/bubble_7.png');
+        this.load.image('garbagepile', 'assets/garbagepile.png');
     }
 
     create ()
