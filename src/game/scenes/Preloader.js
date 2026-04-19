@@ -38,7 +38,13 @@ export class Preloader extends Scene
         this.load.image('loading-bar', 'assets/loading-bar.png');
         this.load.image('loading-bar-unit', 'assets/loading-bar-unit.png');
         this.load.image('dialog-box', 'assets/dialog-box.png');
-
+        this.load.image('bubble1', 'assets/bubble_1.png');
+        this.load.image('bubble2', 'assets/bubble_2.png');
+        this.load.image('bubble3', 'assets/bubble_3.png');
+        this.load.image('bubble4', 'assets/bubble_4.png');
+        this.load.image('bubble5', 'assets/bubble_5.png');
+        this.load.image('bubble6', 'assets/bubble_6.png');
+        this.load.image('bubble7', 'assets/bubble_7.png');
     }
 
     create ()
