@@ -81,8 +81,6 @@ export class Main extends Scene {
         });
     }
 
-    // ... keep all your existing methods (createButtonMatrix, toggleMusic, etc.) ...
-
     startMovement() {
         const screenWidth = this.cameras.main.width;
         const scale = this.getScale();
@@ -145,7 +143,6 @@ export class Main extends Scene {
         });
     }
 
-    // ... keep all your other existing methods unchanged (createButtonMatrix, toggleMusic, etc.) ...
     createButtonMatrix(scale, screenWidth, screenHeight) {
         // Define button matrix layout (2 rows, 3 columns)
         const buttons = [
@@ -262,12 +259,23 @@ export class Main extends Scene {
     }
     
     getScale() {
-        // Simple scale calculation based on screen width - increased by 30 points
+        // More conservative scale calculation for browser compatibility
         const screenWidth = this.cameras.main.width;
-        if (screenWidth < 500) return 1.8; // Mobile (was 1.5)
-        if (screenWidth < 800) return 1.5; // Small tablet (was 1.2)
-        if (screenWidth < 1200) return 1.3; // Desktop (was 1.0)
-        return 1.1; // Large desktop (was 0.8)
+        const screenHeight = this.cameras.main.height;
+        
+        // Base reference size (your original game size)
+        const baseWidth = 1024;
+        const baseHeight = 768;
+        
+        // Calculate relative scale but cap it to prevent oversizing
+        const scaleX = screenWidth / baseWidth;
+        const scaleY = screenHeight / baseHeight;
+        
+        // Use smaller scale and clamp between reasonable bounds
+        const scale = Math.min(scaleX, scaleY);
+        
+        // More conservative clamping - prevent things from getting too big
+        return Math.max(0.4, Math.min(1.2, scale));
     }
     
     createTaskbar() {
@@ -500,68 +508,16 @@ export class Main extends Scene {
             this.menuItems = [];
         }
     }
-    
-startMovement() {
-    const screenWidth = this.cameras.main.width;
-    const scale = this.getScale();
-    const circleRadius = 50 * scale;
 
-    // Move to left side (accounting for scaled circle size)
-    this.tweens.add({
-        targets: this.circle,
-        x: circleRadius,
-        duration: 3000,
-        ease: 'Linear',
-        onComplete: () => {
-            // Move to right side (accounting for scaled circle size)
-            this.tweens.add({
-                targets: this.circle,
-                x: screenWidth - circleRadius,
-                duration: 4000,
-                ease: 'Linear',
-                onComplete: () => {
-                    // Return to center
-                    this.tweens.add({
-                        targets: this.circle,
-                        x: screenWidth / 2,
-                        duration: 3000,
-                        ease: 'Linear',
-                        onComplete: () => {
-                            this.startMovement();
-                        }
-                    });
-                }
-            });
+    updateData(parent, key, data) {
+        if (key === 'metal') {
+            this.metal = data;
+        } else if (key === 'plastic') {
+            this.plastic = data;
+        } else if (key === 'magnets') {
+            this.magnets = data;
+        } else if (key === 'happiness') {
+            this.happiness = data;
         }
-    });
-
-    this.bounceMovement();
-}
-
-bounceMovement() {
-    const screenHeight = this.cameras.main.height;
-    const scale = this.getScale();
-    const bounceDistance = 120 * scale; // Scale the bounce distance too
-
-    this.tweens.add({
-        targets: this.circle,
-        y: ((screenHeight * 3) / 4) - bounceDistance, // Bounce from the 3/4 position (bottom area)
-        duration: 800,
-        ease: 'Sine.easeInOut',
-        yoyo: true,
-        repeat: -1
-    });
-}
-
-updateData(parent, key, data) {
-    if (key === 'metal') {
-        this.metal = data;
-    } else if (key === 'plastic') {
-        this.plastic = data;
-    } else if (key === 'magnets') {
-        this.magnets = data;
-    } else if (key === 'happiness') {
-        this.happiness = data;
     }
-}
 }
