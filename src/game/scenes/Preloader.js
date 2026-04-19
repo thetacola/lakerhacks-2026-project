@@ -36,6 +36,7 @@ export class Preloader extends Scene
         this.load.image('loading-bar', 'assets/loading-bar.png');
         this.load.image('loading-bar-unit', 'assets/loading-bar-unit.png');
         this.load.image('dialog-box', 'assets/dialog-box.png');
+
     }
 
     create ()
