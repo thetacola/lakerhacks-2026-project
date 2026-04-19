@@ -50,14 +50,8 @@ export class Feed extends Scene {
         // Create inventory display
         this.createInventoryDisplay(screenWidth, screenHeight);
         
-        // Add back button
-        const backButton = this.add.text(50, 50, 'BACK', {
-            fontFamily: 'Arial Black',
-            fontSize: 24,
-            color: '#ffffff',
-            stroke: '#000000',
-            strokeThickness: 2
-        }).setInteractive().on('pointerdown', () => {
+        // Add Windows 98 style back button in bottom left
+        this.createWindows98Button(120, screenHeight - 60, 'Back', () => {
             this.scene.start('Main');
         });
         
@@ -71,6 +65,102 @@ export class Feed extends Scene {
                 this.updateBabyColor();
             }
         });
+    }
+
+    createWindows98Button(x, y, text, callback) {
+        const buttonWidth = 120;
+        const buttonHeight = 40;
+        
+        // Button background
+        const buttonBg = this.add.graphics();
+        buttonBg.fillStyle(0xc0c0c0); // Windows 98 gray
+        buttonBg.fillRect(x - buttonWidth/2, y - buttonHeight/2, buttonWidth, buttonHeight);
+        
+        // Button border (raised effect)
+        // Top and left borders (white for raised look)
+        buttonBg.lineStyle(2, 0xffffff);
+        buttonBg.strokeRect(x - buttonWidth/2, y - buttonHeight/2, buttonWidth, 2); // Top
+        buttonBg.strokeRect(x - buttonWidth/2, y - buttonHeight/2, 2, buttonHeight); // Left
+        
+        // Bottom and right borders (dark gray for shadow)
+        buttonBg.lineStyle(2, 0x808080);
+        buttonBg.strokeRect(x - buttonWidth/2, y + buttonHeight/2 - 2, buttonWidth, 2); // Bottom
+        buttonBg.strokeRect(x + buttonWidth/2 - 2, y - buttonHeight/2, 2, buttonHeight); // Right
+        
+        // Inner shadow for more depth
+        buttonBg.lineStyle(1, 0x000000);
+        buttonBg.strokeRect(x - buttonWidth/2 + 2, y + buttonHeight/2 - 3, buttonWidth - 4, 1); // Bottom inner
+        buttonBg.strokeRect(x + buttonWidth/2 - 3, y - buttonHeight/2 + 2, 1, buttonHeight - 4); // Right inner
+
+        // Button text
+        const buttonText = this.add.text(x, y, text, {
+            fontFamily: 'Arial',
+            fontSize: 18,
+            color: '#000000',
+            align: 'center'
+        }).setOrigin(0.5);
+
+        // Create interactive area
+        const buttonArea = this.add.zone(x, y, buttonWidth, buttonHeight);
+        buttonArea.setInteractive();
+
+        // Button hover and click effects
+        buttonArea.on('pointerover', () => {
+            buttonText.setColor('#0000ff'); // Blue text on hover
+        });
+
+        buttonArea.on('pointerout', () => {
+            buttonText.setColor('#000000'); // Back to black
+        });
+
+        buttonArea.on('pointerdown', () => {
+            // Pressed effect - reverse the border colors
+            buttonBg.clear();
+            buttonBg.fillStyle(0xc0c0c0);
+            buttonBg.fillRect(x - buttonWidth/2, y - buttonHeight/2, buttonWidth, buttonHeight);
+            
+            // Pressed borders (inverted)
+            buttonBg.lineStyle(2, 0x808080);
+            buttonBg.strokeRect(x - buttonWidth/2, y - buttonHeight/2, buttonWidth, 2); // Top (dark)
+            buttonBg.strokeRect(x - buttonWidth/2, y - buttonHeight/2, 2, buttonHeight); // Left (dark)
+            
+            buttonBg.lineStyle(2, 0xffffff);
+            buttonBg.strokeRect(x - buttonWidth/2, y + buttonHeight/2 - 2, buttonWidth, 2); // Bottom (light)
+            buttonBg.strokeRect(x + buttonWidth/2 - 2, y - buttonHeight/2, 2, buttonHeight); // Right (light)
+
+            // Move text slightly to simulate press
+            buttonText.setPosition(x + 1, y + 1);
+        });
+
+        buttonArea.on('pointerup', () => {
+            // Reset to normal state
+            buttonBg.clear();
+            buttonBg.fillStyle(0xc0c0c0);
+            buttonBg.fillRect(x - buttonWidth/2, y - buttonHeight/2, buttonWidth, buttonHeight);
+            
+            // Normal raised borders
+            buttonBg.lineStyle(2, 0xffffff);
+            buttonBg.strokeRect(x - buttonWidth/2, y - buttonHeight/2, buttonWidth, 2);
+            buttonBg.strokeRect(x - buttonWidth/2, y - buttonHeight/2, 2, buttonHeight);
+            
+            buttonBg.lineStyle(2, 0x808080);
+            buttonBg.strokeRect(x - buttonWidth/2, y + buttonHeight/2 - 2, buttonWidth, 2);
+            buttonBg.strokeRect(x + buttonWidth/2 - 2, y - buttonHeight/2, 2, buttonHeight);
+            
+            buttonBg.lineStyle(1, 0x000000);
+            buttonBg.strokeRect(x - buttonWidth/2 + 2, y + buttonHeight/2 - 3, buttonWidth - 4, 1);
+            buttonBg.strokeRect(x + buttonWidth/2 - 3, y - buttonHeight/2 + 2, 1, buttonHeight - 4);
+
+            // Reset text position
+            buttonText.setPosition(x, y);
+            
+            // Execute callback
+            if (callback) {
+                callback();
+            }
+        });
+
+        return { buttonBg, buttonText, buttonArea };
     }
 
     updateBabyColor() {

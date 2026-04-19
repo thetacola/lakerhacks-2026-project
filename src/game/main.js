@@ -25,7 +25,7 @@ const config = {
         height: 768       // Fixed height
     },
     audio: {
-        disableWebAudio: false
+        disableWebAudio: true
     },
     physics: {
         default: 'arcade'
