@@ -6,10 +6,10 @@ export class Stats extends Scene
     {
         super('Stats');
 
-        this.metalButton;
-        this.plasticButton;
-        this.magnetsButton;
-        this.happinessPercent;
+        this.metal = 0;
+        this.plastic = 0;
+        this.magnets = 0;
+        this.happiness = 0;
     }
 
     init() {
@@ -45,10 +45,10 @@ export class Stats extends Scene
             align: 'left'
         }).setOrigin(0.0, 0.5);
 
-        this.metalButton =  createLoadingBar('Metals', 10, 100, 65, this);
-        this.plasticButton = createLoadingBar('Plastic', 10, 150, 72.8, this);
-        this.magnetsButton = createLoadingBar('Magnets', 10, 200, 22, this);
-        this.happinessPercent = createLoadingBar('Happiness', 10, 250, 100, this);
+        this.metalButton =  createLoadingBar('Metals', 10, 100, this.metal, this);
+        this.plasticButton = createLoadingBar('Plastic', 10, 150, this.plastic, this);
+        this.magnetsButton = createLoadingBar('Magnets', 10, 200, this.magnets, this);
+        this.happinessPercent = createLoadingBar('Happiness', 10, 250, this.happiness, this);
 
         const statusBg = this.add.image(10, 275, 'dialog-box').setOrigin(0.0);
 
@@ -88,7 +88,7 @@ export class Stats extends Scene
             this.scene.start('Main');
         });
 
-
+        this.registry.events.on('changedata', this.updateData, this);
 
         function createLoadingBar (text, posX, posY, percent, scene) {
             var bar = scene.add.image(posX, posY, 'loading-bar').setOrigin(0.0, 0.5);
@@ -111,25 +111,14 @@ export class Stats extends Scene
 
     updateData (parent, key, data) {
         if (key === 'metal') {
-            this.metalButton =  createLoadingBar('Metals', 10, 100, data, this);
-            this.metalButton.setInteractive();
-            this.metalButton.on('pointerdown', () => {
-                statText.setText('E-waste oftentimes contains heavy metals, such as lead and mercury. When these metals are put in a landfill, they oftentimes seep into the soil and groundwater, contaminating the environment and leading to health problems for those who live around it. Instead of going to a landfill, these metals can instead be recycled, being put into new electronic devices and preventing them from spreading into the environment.')
-            });
+            this.metal = data;
         } else if (key === 'plastic') {
-            this.plasticButton = createLoadingBar('Plastic', 10, 150, data, this);
-            this.plasticButton.setInteractive();
-            this.plasticButton.on('pointerdown', () => {
-                statText.setText('Many different electronic devices use plastic, especially in their exterior cases. When put into landfills, the plastic falls apart, leaving microplastics in the soil. Most other materials are broken up and decomposed by bacteria, however plastics are an exception. The items themselves can last for hundreds of years, though the microscopic plastic particles still remain. Unfortunately, there is also no known way for many different types of plastics used in electronic devices to be recycled. Thankfully, $lil_guy_name can handle plastic no problem!');
-            });
+            this.plastic = data;
         } else if (key === 'magnets') {
-            this.magnetsButton = createLoadingBar('Magnets', 10, 200, data, this);
-            this.magnetsButton.setInteractive();
-            this.magnetsButton.on('pointerdown', () => {
-                statText.setText('The risks of magnets in e-waste is similar to that of metals. However, magnets oftentimes contain specific metals that are considered as both in limited supply and essential to electronics. Like metals, magnets can seep out contaminants into the surrounding soil and groundwater when in a landfill. Recycling magnets makes sure that these rare metals still have some supply, and prevents them from causing harm in a landfill.');
-            });
+            this.magnets = data;
         } else if (key === 'happiness') {
-            this.happinessPercent = createLoadingBar('Happiness', 10, 250, data, this);
+            this.happiness = data;
         }
+
     }
 }

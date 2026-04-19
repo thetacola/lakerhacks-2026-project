@@ -3,9 +3,19 @@ import { Scene } from 'phaser';
 export class Main extends Scene {
     constructor() {
         super('Main');
+
+        this.metal = 0;
+        this.plastic = 0;
+        this.magnets = 0;
+        this.happiness = 0;
     }
 
     create() {
+        this.registry.set('metal', this.metal);
+        this.registry.set('plastic', this.plastic);
+        this.registry.set('magnets', this.magnets);
+        this.registry.set('happiness', this.happiness);
+
         // Set a background color for the scene
         this.cameras.main.setBackgroundColor(0x008080);
 
@@ -129,6 +139,7 @@ export class Main extends Scene {
             buttonImage.on('pointerup', goToScene);
             buttonText.on('pointerup', goToScene);
         });
+        this.registry.events.on('changedata', this.updateData, this);
     }
 
     toggleMusic() {
@@ -454,5 +465,17 @@ export class Main extends Scene {
             yoyo: true,
             repeat: -1
         });
+    }
+
+    updateData (parent, key, data) {
+        if (key === 'metal') {
+            this.metal = data;
+        } else if (key === 'plastic') {
+            this.plastic = data;
+        } else if (key === 'magnets') {
+            this.magnets = data;
+        } else if (key === 'happiness') {
+            this.happiness = data;
+        }
     }
 }

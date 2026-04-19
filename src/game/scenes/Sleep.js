@@ -101,6 +101,8 @@ export class Sleep extends Scene {
         // Handle clicks on both image and text - go back to Main
         const wakeUp = () => {
             console.log('Wake Up clicked - going to Main'); // Debug log
+            var newHappiness = this.registry.get('happiness') + 10;
+            this.registry.set('happiness', newHappiness);
             this.scene.start('Main');
         };
 
