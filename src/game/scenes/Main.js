@@ -7,14 +7,24 @@ export class Main extends Scene {
         this.metal = 0;
         this.plastic = 0;
         this.magnets = 0;
-        this.happiness = 0;
+
+        this.hunger = 0;
+        this.energy = 100;
+        this.fun = 0;
+        this.cleanliness = 100;
     }
 
     create() {
         this.registry.set('metal', this.metal);
         this.registry.set('plastic', this.plastic);
         this.registry.set('magnets', this.magnets);
-        this.registry.set('happiness', this.happiness);
+
+        this.registry.set('hunger', this.hunger);
+        this.registry.set('energy', this.energy);
+        this.registry.set('fun', this.fun);
+        this.registry.set('cleanliness', this.cleanliness);
+
+        this.registry.set('happiness', (this.hunger + this.energy + this.fun + this.cleanliness) / 4);
 
         // Set a background color for the scene
         this.cameras.main.setBackgroundColor(0x008080);
@@ -63,6 +73,44 @@ export class Main extends Scene {
 
         // Initialize menu state
         this.menuOpen = false;
+
+        var timer = this.time.addEvent({
+            delay: 6000, // ms
+            callback: this.decreaseStats,
+            args: [this],
+            //callbackScope: thisArg,
+            loop: true,
+        });
+    }
+
+    decreaseStats(scene) {
+        if (scene.hunger >= 1) {
+            scene.hunger = scene.hunger - 1;
+        }
+        if (scene.energy >= 1) {
+            scene.energy = scene.energy - 1;
+        }
+        if (scene.fun >= 1) {
+            scene.fun = scene.fun - 1;
+        }
+        if (scene.cleanliness >= 1) {
+            scene.cleanliness = scene.cleanliness - 1;
+        }
+
+        var oldHappiness = scene.registry.get('happiness');
+
+        scene.registry.set('metal', scene.metal);
+        scene.registry.set('plastic', scene.plastic);
+        scene.registry.set('magnets', scene.magnets);
+        scene.registry.set('hunger', scene.hunger);
+        scene.registry.set('energy', scene.energy);
+        scene.registry.set('fun', scene.fun);
+        scene.registry.set('cleanliness', scene.cleanliness);
+
+        var newHappiness = (scene.hunger + scene.energy + scene.fun + scene.cleanliness) / 4;
+        scene.registry.set('happiness', newHappiness);
+
+        console.log("Old happiness: ", oldHappiness, " → New happiness: ", scene.registry.get('happiness'));
     }
 
     createBabyAnimations() {
@@ -499,8 +547,15 @@ export class Main extends Scene {
             this.plastic = data;
         } else if (key === 'magnets') {
             this.magnets = data;
-        } else if (key === 'happiness') {
-            this.happiness = data;
+        } else if (key === 'hunger') {
+            this.hunger = data;
+        } else if (key === 'energy') {
+            this.energy = data;
+        } else if (key === 'fun') {
+            this.fun = data;
+        } else if (key === 'cleanliness') {
+            this.cleanliness = data;
         }
     }
+
 }
