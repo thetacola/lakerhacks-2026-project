@@ -79,6 +79,7 @@ export class Stats extends Scene
         this.computersButton.setInteractive();
         this.phonesButton.setInteractive();
         this.gamesButton.setInteractive();
+        this.happinessPercent.setInteractive();
         backButton.setInteractive();
 
         this.computersButton.on('pointerdown', () => {
@@ -89,6 +90,9 @@ export class Stats extends Scene
         });
         this.gamesButton.on('pointerdown', () => {
             statText.setText('Game consoles contain complex electronic components including processors, memory chips, and circuit boards with valuable metals. They often contain hazardous materials like lead-based solder and flame retardants. Proper e-waste recycling ensures these materials are safely processed and valuable components can be reused in new electronics.');
+        });
+        this.happinessPercent.on('pointerdown', () => {
+           statText.setText('Your creature\'s overall happiness is based on its needs. Unfortunately, the creature has not yet learned how to speak, as such they cannot communicate these needs to you. Making sure they\'re fed, well-rested, entertained, and clean will all ensure a happy critter.')
         });
         backButton.on('pointerup', () => {
             this.scene.start('Main');

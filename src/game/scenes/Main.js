@@ -39,6 +39,7 @@ export class Main extends Scene {
         // Start game systems
         this.startBabyMovement();
         this.startStatDecrease();
+        this.startParticleSys();
         
         // Set up registry listener for color updates
         this.registry.events.on('changedata', this.handleRegistryChange, this);
@@ -208,6 +209,127 @@ export class Main extends Scene {
 
                 // Update happiness
                 this.updateHappiness();
+            },
+            loop: true
+        });
+    }
+
+    startParticleSys() {
+        this.time.addEvent({
+            delay: 1000,
+            callback: () => {
+                if (this.hunger < 20) {
+                    const startX = this.baby.x + (Math.random() - 0.5) * 120;
+                    const startY = this.baby.y + (Math.random() - 0.5) * 40;
+
+                    const bubble = this.add.image(startX, startY, 'particle_crt');
+
+                    const startScale = Math.random() * 5;
+                    const growthFactor = 1.1 + Math.random();
+                    const endScale = startScale * growthFactor;
+
+                    const horizontalDrift = (Math.random() - 0.5) * 80;
+                    const endX = startX + horizontalDrift;
+                    const endY = 50 + Math.random() * 100;
+
+                    bubble.setScale(startScale);
+
+                    this.tweens.add({
+                        targets: bubble,
+                        x: endX,
+                        y: endY,
+                        alpha: 0,
+                        scale: endScale,
+                        rotation: (Math.random() - 0.5) * Math.PI,
+                                    duration: 2000 + Math.random() * 2000,
+                                    ease: 'Power1',
+                                    onComplete: () => bubble.destroy()
+                    });
+                }
+                if (this.energy < 20) {
+                    const startX = this.baby.x + (Math.random() - 0.5) * 120;
+                    const startY = this.baby.y + (Math.random() - 0.5) * 40;
+
+                    const bubble = this.add.image(startX, startY, 'particle_z');
+
+                    const startScale = Math.random() * 5;
+                    const growthFactor = 1.1 + Math.random();
+                    const endScale = startScale * growthFactor;
+
+                    const horizontalDrift = (Math.random() - 0.5) * 80;
+                    const endX = startX + horizontalDrift;
+                    const endY = 50 + Math.random() * 100;
+
+                    bubble.setScale(startScale);
+
+                    this.tweens.add({
+                        targets: bubble,
+                        x: endX,
+                        y: endY,
+                        alpha: 0,
+                        scale: endScale,
+                        rotation: (Math.random() - 0.5) * Math.PI,
+                                    duration: 2000 + Math.random() * 2000,
+                                    ease: 'Power1',
+                                    onComplete: () => bubble.destroy()
+                    });
+                }
+                if (this.fun < 20) {
+                    const startX = this.baby.x + (Math.random() - 0.5) * 120;
+                    const startY = this.baby.y + (Math.random() - 0.5) * 40;
+
+                    const bubble = this.add.image(startX, startY, 'particle_ball');
+
+                    const startScale = Math.random() * 5;
+                    const growthFactor = 1.1 + Math.random();
+                    const endScale = startScale * growthFactor;
+
+                    const horizontalDrift = (Math.random() - 0.5) * 80;
+                    const endX = startX + horizontalDrift;
+                    const endY = 50 + Math.random() * 100;
+
+                    bubble.setScale(startScale);
+
+                    this.tweens.add({
+                        targets: bubble,
+                        x: endX,
+                        y: endY,
+                        alpha: 0,
+                        scale: endScale,
+                        rotation: (Math.random() - 0.5) * Math.PI,
+                                    duration: 2000 + Math.random() * 2000,
+                                    ease: 'Power1',
+                                    onComplete: () => bubble.destroy()
+                    });
+                }
+                if (this.cleanliness < 20) {
+                    const startX = this.baby.x + (Math.random() - 0.5) * 120;
+                    const startY = this.baby.y + (Math.random() - 0.5) * 40;
+
+                    const bubble = this.add.image(startX, startY, 'particle_smelly');
+
+                    const startScale = Math.random() * 5;
+                    const growthFactor = 1.1 + Math.random();
+                    const endScale = startScale * growthFactor;
+
+                    const horizontalDrift = (Math.random() - 0.5) * 80;
+                    const endX = startX + horizontalDrift;
+                    const endY = 50 + Math.random() * 100;
+
+                    bubble.setScale(startScale);
+
+                    this.tweens.add({
+                        targets: bubble,
+                        x: endX,
+                        y: endY,
+                        alpha: 0,
+                        scale: endScale,
+                        rotation: (Math.random() - 0.5) * Math.PI,
+                                    duration: 2000 + Math.random() * 2000,
+                                    ease: 'Power1',
+                                    onComplete: () => bubble.destroy()
+                    });
+                }
             },
             loop: true
         });

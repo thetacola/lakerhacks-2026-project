@@ -55,6 +55,11 @@ export class Preloader extends Scene
         this.load.image('phone', 'assets/phone.png');
         this.load.image('game', 'assets/game.png');
         this.load.image('backetball', 'assets/basketball.png');
+
+        this.load.image('particle_ball', 'assets/ball.png');
+        this.load.image('particle_smelly', 'assets/smelly.png');
+        this.load.image('particle_z', 'assets/z.png');
+        this.load.image('particle_crt', 'assets/crt.png');
     }
 
     create ()
