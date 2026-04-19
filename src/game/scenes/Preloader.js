@@ -31,8 +31,17 @@ export class Preloader extends Scene
     {
         //  Load the assets for the game - Replace with your own assets
         this.load.setPath('assets');
-
+        this.load.image('musicOn', 'sound_on.png');   // Replace with your "music on" image
+        this.load.image('musicOff', 'sound_mute.png'); // Replace with your "music off" image
         this.load.image('logo', 'logo.png');
+        this.load.image('stats', 'stats.png');
+        this.load.image('play', 'play.png');
+        this.load.image('feed', 'feed.png');
+        this.load.image('gather', 'gather.png');
+        this.load.image('clean', 'clean.png');
+        this.load.image('sleep', 'sleep.png');
+        this.load.image('wakeup', 'wakeup.png');
+        this.load.audio('bgMusic', 'bgm.mp3');
     }
 
     create ()

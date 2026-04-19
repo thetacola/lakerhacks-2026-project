@@ -9,6 +9,7 @@ import { Play } from './scenes/Play';
 import { Feed } from './scenes/Feed';
 import { Gather } from './scenes/Gather';
 import { Clean } from './scenes/Clean';
+import { Sleep } from './scenes/Sleep';
 import { AUTO, Game, Scale } from 'phaser';
 
 //  Find out more information about the Game Config at:
@@ -23,6 +24,9 @@ const config = {
         mode: Scale.EXPAND,
         autoCenter: Scale.CENTER_BOTH
     },
+    audio: {
+        disableWebAudio: false
+    },
     scene: [
         Boot,
         Preloader,
@@ -34,7 +38,8 @@ const config = {
         Play,
         Feed,
         Gather,
-        Clean
+        Clean,
+        Sleep
     ]
 };
 
