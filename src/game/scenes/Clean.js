@@ -18,6 +18,22 @@ export class Clean extends Scene {
         // Set background
         this.cameras.main.setBackgroundColor(0x87CEEB);
 
+        // Start washing up sound loop
+        if (this.cache.audio.exists('washingup')) {
+            try {
+                this.washingSound = this.sound.add('washingup', {
+                    volume: 0.4,
+                    loop: true
+                });
+                this.washingSound.play();
+                console.log('Playing washing up sound loop');
+            } catch (error) {
+                console.error('Error playing washing up sound:', error);
+            }
+        } else {
+            console.warn('Washing up sound not found in audio cache');
+        }
+
         const screenWidth = this.cameras.main.width;
         const screenHeight = this.cameras.main.height;
 
@@ -67,6 +83,11 @@ export class Clean extends Scene {
 
         // Return to Main after 5 seconds
         this.time.delayedCall(5000, () => {
+            // Stop washing sound before leaving
+            if (this.washingSound && this.washingSound.isPlaying) {
+                this.washingSound.stop();
+                console.log('Stopped washing up sound');
+            }
             this.scene.start('Main');
         });
 
@@ -192,5 +213,14 @@ export class Clean extends Scene {
         };
         
         scheduleNext();
+    }
+
+    destroy() {
+        // Clean up washing sound when scene is destroyed
+        if (this.washingSound && this.washingSound.isPlaying) {
+            this.washingSound.stop();
+            console.log('Cleaning up washing sound on scene destroy');
+        }
+        super.destroy();
     }
 }

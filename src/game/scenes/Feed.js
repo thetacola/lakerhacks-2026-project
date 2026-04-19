@@ -210,6 +210,16 @@ export class Feed extends Scene {
         
         this.createSimpleEatingAnimation(item);
         this.increaseHunger();
+// Play eating sound effect
+try {
+    this.sound.play('eating', {
+        volume: 0.7,
+        loop: false
+    });
+    console.log('Playing eating sound effect');
+} catch (error) {
+    console.warn('Could not play eating sound:', error);
+}
     }
 
     createSimpleEatingAnimation(item) {

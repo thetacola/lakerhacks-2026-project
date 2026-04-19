@@ -260,6 +260,21 @@ export class Gather extends Scene {
 
         console.log(`Spawning trash at click ${this.currentClicks + 1}`);
 
+        // Play pickup sound effect when clicking
+        if (this.cache.audio.exists('pickup')) {
+            try {
+                this.sound.play('pickup', {
+                    volume: 0.5,
+                    loop: false
+                });
+                console.log('Playing pickup sound effect');
+            } catch (error) {
+                console.error('Error playing pickup sound:', error);
+            }
+        } else {
+            console.warn('Pickup sound not found in audio cache');
+        }
+
         try {
             // Generate random trash frame (trash1 to trash58)
             const frameNumber = 1 + Math.floor(Math.random() * 58); // 1-58
