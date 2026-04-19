@@ -50,6 +50,9 @@ export class Preloader extends Scene
         this.load.image('garbagepile', 'assets/garbagepile.png');
         this.load.image('hoop-stand', 'assets/hoop-stand.png');
         this.load.image('hoop-net', 'assets/hoop-net.png');
+        this.load.image('computer', 'assets/computer.png');
+        this.load.image('phone', 'assets/phone.png');
+        this.load.image('game', 'assets/game.png');
     }
 
     create ()

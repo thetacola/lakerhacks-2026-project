@@ -12,6 +12,16 @@ export class Gather extends Scene {
         const screenWidth = this.cameras.main.width;
         const screenHeight = this.cameras.main.height;
 
+        // Randomly select an e-waste item
+        const ewasteItems = [
+            { key: 'phone', label: 'Phone', statKey: 'phonesFound' },
+            { key: 'game', label: 'Game Console', statKey: 'gamesFound' },
+            { key: 'computer', label: 'Computer', statKey: 'computersFound' }
+        ];
+        
+        this.foundItem = ewasteItems[Math.floor(Math.random() * ewasteItems.length)];
+        console.log(`Selected e-waste item: ${this.foundItem.label}`);
+
         // Create sky and ground background
         this.createBackground(screenWidth, screenHeight);
 
@@ -349,17 +359,8 @@ export class Gather extends Scene {
 
             // Check if objective complete
             if (this.currentClicks >= this.targetClicks) {
-                console.log('Objective complete! Returning to Main in 2 seconds...');
-            
-                // Change prompt to indicate completion
-                this.tapPrompt.setText('COMPLETE!');
-                this.tapPrompt.setColor('#00ff00');
-
-                // Return to Main after brief delay - NO STATS MODIFICATION
-                this.time.delayedCall(2000, () => {
-                    console.log('Returning to Main without modifying stats');
-                    this.scene.start('Main');
-                });
+                console.log('Objective complete! Showing found item...');
+                this.showFoundItem();
             }
 
         } catch (error) {
@@ -370,12 +371,59 @@ export class Gather extends Scene {
             this.clickCounter.setText(`${this.currentClicks} / ${this.targetClicks}`);
         
             if (this.currentClicks >= this.targetClicks) {
-                this.tapPrompt.setText('COMPLETE!');
-                this.tapPrompt.setColor('#00ff00');
-                this.time.delayedCall(2000, () => {
-                    this.scene.start('Main');
-                });
+                this.showFoundItem();
             }
         }
+    }
+
+    showFoundItem() {
+        // Update the found item stat
+        const currentCount = this.registry.get(this.foundItem.statKey) || 0;
+        this.registry.set(this.foundItem.statKey, currentCount + 1);
+        
+        console.log(`${this.foundItem.label} found! Total: ${currentCount + 1}`);
+
+        // Hide the tap prompt and counter
+        this.tapPrompt.setVisible(false);
+        this.clickCounter.setVisible(false);
+
+        // Get screen dimensions
+        const screenWidth = this.cameras.main.width;
+        const screenHeight = this.cameras.main.height;
+
+        // Create background overlay
+        const overlay = this.add.graphics();
+        overlay.fillStyle(0x000000, 0.7);
+        overlay.fillRect(0, 0, screenWidth, screenHeight);
+
+        // Show the found item image - 2x BIGGER from the current size!
+        const itemImage = this.add.image(screenWidth / 2, screenHeight / 2 - 50, this.foundItem.key);
+        itemImage.setScale(3.0); // Changed from 1.5 to 3.0 (2x bigger)
+
+        // Show the item name
+        const itemText = this.add.text(screenWidth / 2, screenHeight / 2 + 100, `Found: ${this.foundItem.label}!`, {
+            fontFamily: 'Arial Black',
+            fontSize: 36,
+            color: '#00ff00',
+            stroke: '#000000',
+            strokeThickness: 4,
+            align: 'center'
+        }).setOrigin(0.5);
+
+        // Show count
+        const countText = this.add.text(screenWidth / 2, screenHeight / 2 + 150, `Total Found: ${currentCount + 1}`, {
+            fontFamily: 'Arial Black',
+            fontSize: 24,
+            color: '#ffffff',
+            stroke: '#000000',
+            strokeThickness: 3,
+            align: 'center'
+        }).setOrigin(0.5);
+
+        // Return to Main after delay
+        this.time.delayedCall(3000, () => {
+            console.log('Returning to Main');
+            this.scene.start('Main');
+        });
     }
 }

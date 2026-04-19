@@ -24,6 +24,17 @@ export class Main extends Scene {
         this.registry.set('fun', this.fun);
         this.registry.set('cleanliness', this.cleanliness);
 
+        // Initialize hidden e-waste collection stats
+        if (!this.registry.has('phonesFound')) {
+            this.registry.set('phonesFound', 0);
+        }
+        if (!this.registry.has('gamesFound')) {
+            this.registry.set('gamesFound', 0);
+        }
+        if (!this.registry.has('computersFound')) {
+            this.registry.set('computersFound', 0);
+        }
+
         this.registry.set('happiness', (this.hunger + this.energy + this.fun + this.cleanliness) / 4);
 
         // Set a background color for the scene
@@ -74,7 +85,6 @@ export class Main extends Scene {
         // Initialize menu state
         this.menuOpen = false;
 
-        this.registry.events.on('changedata', this.updateData, this);
         var timer = this.time.addEvent({
             delay: 6000, // ms
             callback: this.decreaseStats,
