@@ -13,6 +13,7 @@ export class Stats extends Scene
     }
 
     init() {
+
         this.cameras.main.setBackgroundColor(0x00ff00);
         // this.cameras.main.height - 40, this.cameras.main.width
 
@@ -39,6 +40,11 @@ export class Stats extends Scene
 
     create ()
     {
+
+        this.metal = this.registry.get('metal');
+        this.plastic = this.registry.get('plastic');
+        this.magnets = this.registry.get('magnets');
+        this.happiness = this.registry.get('happiness');
 
         this.add.text(10, 16, 'Stats', {
             fontFamily: 'Arial Black', fontSize: 24, color: '#ffffff',

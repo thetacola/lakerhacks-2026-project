@@ -3,9 +3,20 @@ import { Scene } from 'phaser';
 export class Sleep extends Scene {
     constructor() {
         super('Sleep');
+
+        this.hunger = 0;
+        this.energy = 100;
+        this.fun = 0;
+        this.cleanliness = 100;
     }
 
     create() {
+
+        this.hunger = this.registry.get('hunger');
+        this.energy = this.registry.get('energy');
+        this.fun = this.registry.get('fun');
+        this.cleanliness = this.registry.get('cleanliness');
+
         // Set a darker background color for the scene (darker teal)
         this.cameras.main.setBackgroundColor(0x004080);
 
@@ -51,6 +62,21 @@ export class Sleep extends Scene {
 
         // Initialize menu state
         this.menuOpen = false;
+
+        this.registry.events.on('changedata', this.updateData, this);
+        var decreaseTimer = this.time.addEvent({
+            delay: 6000, // ms
+            callback: this.decreaseStats,
+            args: [this],
+            //callbackScope: thisArg,
+            loop: true
+        });
+        var increaseTime = this.time.addEvent({
+            delay: 100, // ms
+            callback: this.increaseEnergy,
+            args: [this],
+            loop: true
+        });
     }
 
     createBabySleepAnimation() {
@@ -67,6 +93,41 @@ export class Sleep extends Scene {
             frameRate: 4, // Slower frame rate for peaceful sleep
             repeat: -1    // Loop forever
         });
+    }
+
+    increaseEnergy(scene) {
+        if (scene.energy <= 99) {
+            scene.energy = scene.energy + 1;
+            var oldHappiness = scene.registry.get('happiness');
+            scene.registry.set('energy', scene.energy);
+            var newHappiness = (scene.hunger + scene.energy + scene.fun + scene.cleanliness) / 4;
+            scene.registry.set('happiness', newHappiness);
+
+            console.log("Old happiness: ", oldHappiness, " → New happiness: ", scene.registry.get('happiness'));
+        }
+    }
+
+    decreaseStats(scene) {
+        if (scene.hunger >= 1) {
+            scene.hunger = scene.hunger - 1;
+        }
+        if (scene.fun >= 1) {
+            scene.fun = scene.fun - 1;
+        }
+        if (scene.cleanliness >= 1) {
+            scene.cleanliness = scene.cleanliness - 1;
+        }
+
+        var oldHappiness = scene.registry.get('happiness');
+
+        scene.registry.set('hunger', scene.hunger);
+        scene.registry.set('fun', scene.fun);
+        scene.registry.set('cleanliness', scene.cleanliness);
+
+        var newHappiness = (scene.hunger + scene.energy + scene.fun + scene.cleanliness) / 4;
+        scene.registry.set('happiness', newHappiness);
+
+        console.log("Old happiness: ", oldHappiness, " → New happiness: ", scene.registry.get('happiness'));
     }
 
     createWakeupButton(scale, screenWidth, screenHeight) {
@@ -418,6 +479,18 @@ export class Sleep extends Scene {
         if (this.menuItems) {
             this.menuItems.forEach(item => item.destroy());
             this.menuItems = [];
+        }
+    }
+
+    updateData(parent, key, data) {
+        if (key === 'hunger') {
+            this.hunger = data;
+        } else if (key === 'energy') {
+            this.energy = data;
+        } else if (key === 'fun') {
+            this.fun = data;
+        } else if (key === 'cleanliness') {
+            this.cleanliness = data;
         }
     }
 }
