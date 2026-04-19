@@ -48,6 +48,8 @@ export class Preloader extends Scene
         this.load.image('bubble6', 'assets/bubble_6.png');
         this.load.image('bubble7', 'assets/bubble_7.png');
         this.load.image('garbagepile', 'assets/garbagepile.png');
+        this.load.image('hoop-stand', 'assets/hoop-stand.png');
+        this.load.image('hoop-net', 'assets/hoop-net.png');
     }
 
     create ()

@@ -27,6 +27,9 @@ const config = {
     audio: {
         disableWebAudio: false
     },
+    physics: {
+        default: 'arcade'
+    },
     scene: [
         Boot,
         Preloader,
