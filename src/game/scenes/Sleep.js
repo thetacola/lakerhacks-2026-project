@@ -7,7 +7,7 @@ export class Sleep extends Scene {
 
     create() {
         // Set a darker background color for the scene (darker teal)
-        this.cameras.main.setBackgroundColor(0x);
+        this.cameras.main.setBackgroundColor(0x004080);
 
         // Start background music if not playing (same as Main)
         if (!this.game.bgMusic || !this.game.bgMusic.isPlaying) {
